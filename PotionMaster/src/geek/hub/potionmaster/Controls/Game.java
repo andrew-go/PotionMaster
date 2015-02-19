@@ -33,9 +33,7 @@ public class Game {
 	}
 	
 	public void removeSelectedPouch(int x, int y) {
-		selCol = getColIndex(x);
-		selRow = getRowIndex(y);
-		Game.Instance().pouches[selCol][selRow] = -1;
+		Game.Instance().pouches[getColIndex(x)][getRowIndex(y)] = -1;
 		selCol = -1;
 		selRow = -1;
 	}

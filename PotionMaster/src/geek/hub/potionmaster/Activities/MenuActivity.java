@@ -3,15 +3,20 @@ package geek.hub.potionmaster.Activities;
 import geek.hub.potionmaster.R;
 import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 
 public class MenuActivity extends Activity {
 
+	MediaPlayer menuMusic;
+		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_menu);
+		menuMusic = MediaPlayer.create(this, R.raw.menu_music);
+		menuMusic.start();
 	}
 
 	@Override
@@ -29,6 +34,7 @@ public class MenuActivity extends Activity {
 	public void btStartGameClick(View view) {
 		Intent intent = new Intent(getBaseContext(), GameActivity.class);
 		startActivity(intent);
+		menuMusic.stop();
 	}
 	
 }
