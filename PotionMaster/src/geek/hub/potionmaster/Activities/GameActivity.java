@@ -1,31 +1,84 @@
 package geek.hub.potionmaster.Activities;
 
 import geek.hub.potionmaster.R;
-import geek.hub.potionmaster.Controls.Game;
-import geek.hub.potionmaster.Controls.Game.DrawThread;
+import geek.hub.potionmaster.Controls.BoardControl;
+import geek.hub.potionmaster.Controls.GameControl;
+import geek.hub.potionmaster.Controls.GameControl.eGameStatus;
 import geek.hub.potionmaster.Views.GameView;
-import android.app.Activity;
-import android.graphics.Point;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
-public class GameActivity extends Activity {
+public class GameActivity extends BaseActivity {
+	
+	/**Members**/
+	
+	MediaPlayer backgroundMusic;
+	
+	/**Virtual methods**/
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
-		Game.Instance().initPouches();
-		Game.Instance().gameView = (GameView) findViewById(R.id.gameView);
-		Game.Instance().drawThread = new DrawThread(Game.Instance().gameView);
-		Game.Instance().drawThread.start();
-		Game.Instance().gameView.setOnTouchListener(new OnTouchListener() {			
+		initComponents();	
+	}
+	
+	@Override
+	public void initComponents() {
+		GameControl.Instance().initPouches();
+		initGameView();
+		GameControl.Instance().initDrawThread();
+		GameControl.Instance().initGameThread();
+		backgroundMusic = MediaPlayer.create(this, R.raw.game_music);
+		//backgroundMusic.start();	
+	}
+	
+	@Override
+	public void onBackPressed() {
+		backgroundMusic.stop();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		//backgroundMusic.start();
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		backgroundMusic.stop();
+	}
+	
+	/**Events**/
+	
+	private void actionUp(MotionEvent event) {
+		if (!BoardControl.isPouchExist((int)event.getX(), (int)event.getY()))
+			return;
+		if (GameControl.Instance().gameStatus == eGameStatus.noAction || GameControl.Instance().gameStatus == eGameStatus.pouchSelecting)
+			GameControl.Instance().gameStatus = eGameStatus.pouchSelected;	
+	}
+	
+	private void actionMove(MotionEvent event) {
+		if (!BoardControl.isPouchExist((int)event.getX(), (int)event.getY()))
+			return;
+		if (GameControl.Instance().gameStatus != eGameStatus.pouchSelecting)
+			GameControl.Instance().gameStatus = eGameStatus.pouchSelecting;
+		
+	}
+	
+	/**Internal methods**/
+	
+	private void initGameView() {
+		GameControl.Instance().gameView = (GameView) findViewById(R.id.gameView);
+		GameControl.Instance().gameView.setOnTouchListener(new OnTouchListener() {			
 			
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
-				if (!Game.Instance().isOnBoard(event))
+				if (!BoardControl.isTouchOn(event))
 					return false;
 				switch (event.getAction()) {
 				case MotionEvent.ACTION_DOWN:					
@@ -43,31 +96,6 @@ public class GameActivity extends Activity {
 				return true;
 			}
 		});
-		
-	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		View decorView = getWindow().getDecorView();
-		decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-		                              | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-		                              | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-		                              | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-		                              | View.SYSTEM_UI_FLAG_FULLSCREEN
-		                              | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-	}
-	
-	
-	
-	private void actionUp(MotionEvent event) {
-		Game.Instance().removeSelectedPouch((int)event.getX(), (int)event.getY());		
-	}
-	
-
-	
-	private void actionMove(MotionEvent event) {
-		Game.Instance().markSelectedPouch((int)event.getX(), (int)event.getY());
 	}
 
 }

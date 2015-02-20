@@ -1,7 +1,7 @@
 package geek.hub.potionmaster.Views;
 
 import geek.hub.potionmaster.R;
-import geek.hub.potionmaster.Controls.Game;
+import geek.hub.potionmaster.Controls.GameControl;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Point;
@@ -19,8 +19,8 @@ public class GameView extends View {
 	
 	private Drawable pouchImage;
 	
-	private Drawable pouchImageNormal;
-	private Drawable pouchImageSelected;
+	private Drawable pouchImage1;
+	private Drawable pouchImageActive;
 	
 	public Drawable getBoardImage() {
 		return boardImage == null 
@@ -29,20 +29,21 @@ public class GameView extends View {
 	}
 	
 	public Drawable getPouchNormalImage() {
-		return pouchImageNormal == null 
-				? pouchImageNormal = context.getResources().getDrawable(R.drawable.pouch) 
-				: pouchImageNormal;
+		return pouchImage1 == null 
+				? pouchImage1 = context.getResources().getDrawable(R.drawable.pouch) 
+				: pouchImage1;
 	}
 	
-	public Drawable getPouchImage(int i, int j) {
-
-		if (Game.Instance().selRow != -1 && i == Game.Instance().selCol && j == Game.Instance().selRow)
-			return pouchImageSelected == null 
-					? pouchImageSelected = context.getResources().getDrawable(R.drawable.pouch_selected) 
-					: pouchImageSelected;
-		return pouchImageNormal == null 
-					? pouchImageNormal = context.getResources().getDrawable(R.drawable.pouch) 
-					: pouchImageNormal;
+	public Drawable getPouchImage() {
+		return pouchImage1 == null 
+					? pouchImage1 = context.getResources().getDrawable(R.drawable.pouch) 
+					: pouchImage1;
+	}
+	
+	public Drawable getActivePouchImage() {
+			return pouchImageActive == null 
+					? pouchImageActive = context.getResources().getDrawable(R.drawable.pouch_active) 
+					: pouchImageActive;
 	}
 	
 	public Point pouchesStartPoint; 
@@ -65,10 +66,29 @@ public class GameView extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-		drawItems(canvas);
+		drawStandartItems(canvas);
+		switch(GameControl.Instance().gameStatus) {
+			case noAction:
+				break;
+			case pouchSelecting:
+				drawActivePouch(canvas);
+				break;
+			case pouchSelected:
+				drawSelectedPouch(canvas);
+				break;
+			case ingredientDisplaying:
+				break;
+			case actionOffer:
+				break;
+			case attacking:
+				break;
+			case inventoryDisplaying:
+				break;
+		}
+
 	}
 	
-	private void drawItems(Canvas canvas) {
+	private void drawStandartItems(Canvas canvas) {
 			drawBackGround(canvas);
 			drawBoard(canvas);
 			drawPouches(canvas);
@@ -77,7 +97,6 @@ public class GameView extends View {
 	private void drawBackGround(Canvas canvas) {
 		if (backgroundImage == null) {
 			backgroundImage = context.getResources().getDrawable(R.drawable.background);
-			//Rect imageBounds = canvas.getClipBounds();  // Adjust this for where you want it
 	        backgroundImage.setBounds(canvas.getClipBounds());        
 		}
 		backgroundImage.draw(canvas);
@@ -97,19 +116,41 @@ public class GameView extends View {
 	private void drawPouches(Canvas canvas) {
 		if (pouchesStartPoint == null)
 			getPouchesStartPoint();
-		int[][] pouches = Game.Instance().pouches;
+		int[][] pouches = GameControl.Instance().pouches;
 		for (int i = 0; i < pouches.length; i++)
 			for (int j = 0; j < pouches[i].length; j++)
 			{
-				if (pouches[i][j] == -1) /*pouch was clicked*/
-					continue;
-				pouchImage = getPouchImage(i, j); /*is not selected pouch*/
+				pouchImage = getPouchImage();
+				if (pouches[i][j] == -1) /*pouch has been removed*/
+					continue;				
 				pouchImage.setBounds(pouchesStartPoint.x + i * 140, 
 						pouchesStartPoint.y + j * 140, 
 						pouchesStartPoint.x + pouchImage.getMinimumWidth() + i * 140, 
 						pouchesStartPoint.y + pouchImage.getMinimumHeight() + j * 140);
 				pouchImage.draw(canvas);
 			}
+	}
+	
+	private void drawActivePouch(Canvas canvas) {
+		if (GameControl.Instance().currentRow == -1 || GameControl.Instance().currentCol == -1)
+			return;
+		if (GameControl.Instance().pouches[GameControl.Instance().currentCol][GameControl.Instance().currentRow] == -1)
+			return;
+		getActivePouchImage();
+		pouchImageActive.setBounds(pouchesStartPoint.x + GameControl.Instance().currentCol * 140, 
+				pouchesStartPoint.y + GameControl.Instance().currentRow * 140, 
+				pouchesStartPoint.x + pouchImage.getMinimumWidth() + GameControl.Instance().currentCol * 140, 
+				pouchesStartPoint.y + pouchImage.getMinimumHeight() + GameControl.Instance().currentRow * 140);
+		pouchImageActive.draw(canvas);
+	}
+	
+	private void drawSelectedPouch(Canvas canvas) {
+		getActivePouchImage();
+		pouchImageActive.setBounds(pouchesStartPoint.x + GameControl.Instance().currentCol * 140, 
+				pouchesStartPoint.y + GameControl.Instance().currentRow * 140, 
+				pouchesStartPoint.x + pouchImage.getMinimumWidth() + GameControl.Instance().currentCol * 140, 
+				pouchesStartPoint.y + pouchImage.getMinimumHeight() + GameControl.Instance().currentRow * 140);
+		pouchImageActive.draw(canvas);
 	}
 	
 	private void getPouchesStartPoint() {
