@@ -1,5 +1,6 @@
 package geek.hub.potionmaster.Controls;
 
+import geek.hub.potionmaster.Controls.GameItemsControls.BoardControl;
 import geek.hub.potionmaster.Models.Character;
 import geek.hub.potionmaster.Views.GameView;
 

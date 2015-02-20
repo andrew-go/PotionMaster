@@ -1,9 +1,9 @@
 package geek.hub.potionmaster.Activities;
 
 import geek.hub.potionmaster.R;
-import geek.hub.potionmaster.Controls.BoardControl;
 import geek.hub.potionmaster.Controls.GameControl;
 import geek.hub.potionmaster.Controls.GameControl.eGameStatus;
+import geek.hub.potionmaster.Controls.GameItemsControls.BoardControl;
 import geek.hub.potionmaster.Views.GameView;
 import android.media.MediaPlayer;
 import android.os.Bundle;
