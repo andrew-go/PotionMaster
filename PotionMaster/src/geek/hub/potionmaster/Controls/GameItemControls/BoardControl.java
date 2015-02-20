@@ -1,4 +1,4 @@
-package geek.hub.potionmaster.Controls.GameItemsControls;
+package geek.hub.potionmaster.Controls.GameItemControls;
 
 import geek.hub.potionmaster.Controls.GameControl;
 import android.view.MotionEvent;
