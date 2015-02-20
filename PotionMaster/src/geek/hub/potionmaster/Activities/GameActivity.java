@@ -78,6 +78,10 @@ public class GameActivity extends BaseActivity {
 			
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
+				if (GameControl.Instance().gameStatus == eGameStatus.ingredientDisplaying) {
+					GameControl.Instance().gameStatus = eGameStatus.noAction;
+					return false;
+				}
 				if (!BoardControl.isTouchOn(event))
 					return false;
 				switch (event.getAction()) {

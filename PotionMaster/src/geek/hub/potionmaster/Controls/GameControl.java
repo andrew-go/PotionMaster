@@ -110,8 +110,12 @@ public class GameControl {
 	}
 	
 	public static class GameThread extends Thread {
+		
+		/**Members**/
 
 		boolean run = true;
+		
+		/**Thread methods**/
 
 		public void Stop() {
 			run = false;
@@ -119,24 +123,57 @@ public class GameControl {
 
 	    public void run() {
 	    	while(run) {
-	    		if (GameControl.Instance().gameStatus == eGameStatus.pouchSelected)
-	    		{
-					try {
-						sleep(500);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					BoardControl.removeSelectedPouch();
-					GameControl.Instance().gameStatus = eGameStatus.noAction;
+	    		switch(GameControl.Instance().gameStatus) {
+					case noAction:
+						break;
+					case pouchSelecting:
+						
+						break;
+					case pouchSelected:
+						pouchSelected();
+						break;
+					case ingredientDisplaying:
+						ingredientDisplaying();
+						break;
+					case actionOffer:
+						break;
+					case attacking:
+						break;
+					case inventoryDisplaying:
+						break;
 	    		}
-				try {
-					sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
 	    	}
-	    }
+	    	/**TODO maybe it will decrease memory usage**/
+			try {
+				sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 
+	    }
+	    
+	    /**Status methods**/
+	    
+	    private void pouchSelected() {
+			try {
+				sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			BoardControl.removeSelectedPouch();
+			GameControl.Instance().gameStatus = eGameStatus.noAction;
+			try {
+				sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			GameControl.Instance().gameStatus = eGameStatus.ingredientDisplaying;
+	    }
+	    
+	    private void ingredientDisplaying() {
+			/**ingredientDisplaying**/	    	
+	    }
+	    
 	}
 
 }

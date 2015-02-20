@@ -20,7 +20,9 @@ public class GameView extends View {
 	private Drawable pouchImage;
 	
 	private Drawable pouchImage1;
-	private Drawable pouchImageActive;
+	private Drawable pouchActiveImage;
+	
+	private Drawable pouchOpenedImage;
 	
 	public Drawable getBoardImage() {
 		return boardImage == null 
@@ -41,10 +43,18 @@ public class GameView extends View {
 	}
 	
 	public Drawable getActivePouchImage() {
-			return pouchImageActive == null 
-					? pouchImageActive = context.getResources().getDrawable(R.drawable.pouch_active) 
-					: pouchImageActive;
+			return pouchActiveImage == null 
+					? pouchActiveImage = context.getResources().getDrawable(R.drawable.pouch_active) 
+					: pouchActiveImage;
 	}
+	
+	public Drawable getOpenedPouchImage() {
+		return pouchOpenedImage == null 
+				? pouchOpenedImage = context.getResources().getDrawable(R.drawable.pouch_opened) 
+				: pouchOpenedImage;
+	}
+	
+	
 	
 	public Point pouchesStartPoint; 
 	
@@ -77,6 +87,7 @@ public class GameView extends View {
 				drawSelectedPouch(canvas);
 				break;
 			case ingredientDisplaying:
+				drawBigPouch(canvas);
 				break;
 			case actionOffer:
 				break;
@@ -137,20 +148,29 @@ public class GameView extends View {
 		if (GameControl.Instance().pouches[GameControl.Instance().currentCol][GameControl.Instance().currentRow] == -1)
 			return;
 		getActivePouchImage();
-		pouchImageActive.setBounds(pouchesStartPoint.x + GameControl.Instance().currentCol * 140, 
+		pouchActiveImage.setBounds(pouchesStartPoint.x + GameControl.Instance().currentCol * 140, 
 				pouchesStartPoint.y + GameControl.Instance().currentRow * 140, 
 				pouchesStartPoint.x + pouchImage.getMinimumWidth() + GameControl.Instance().currentCol * 140, 
 				pouchesStartPoint.y + pouchImage.getMinimumHeight() + GameControl.Instance().currentRow * 140);
-		pouchImageActive.draw(canvas);
+		pouchActiveImage.draw(canvas);
 	}
 	
 	private void drawSelectedPouch(Canvas canvas) {
 		getActivePouchImage();
-		pouchImageActive.setBounds(pouchesStartPoint.x + GameControl.Instance().currentCol * 140, 
+		pouchActiveImage.setBounds(pouchesStartPoint.x + GameControl.Instance().currentCol * 140, 
 				pouchesStartPoint.y + GameControl.Instance().currentRow * 140, 
 				pouchesStartPoint.x + pouchImage.getMinimumWidth() + GameControl.Instance().currentCol * 140, 
 				pouchesStartPoint.y + pouchImage.getMinimumHeight() + GameControl.Instance().currentRow * 140);
-		pouchImageActive.draw(canvas);
+		pouchActiveImage.draw(canvas);
+	}
+	
+	private void drawBigPouch(Canvas canvas) {
+		getOpenedPouchImage();
+		pouchOpenedImage.setBounds(pouchesStartPoint.x + 40, 
+				pouchesStartPoint.y + 40, 
+				pouchesStartPoint.x + pouchOpenedImage.getMinimumWidth() + 40, 
+				pouchesStartPoint.y + pouchOpenedImage.getMinimumHeight() + 40);
+		pouchOpenedImage.draw(canvas);
 	}
 	
 	private void getPouchesStartPoint() {
