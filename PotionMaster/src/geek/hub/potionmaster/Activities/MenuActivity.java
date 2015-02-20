@@ -26,13 +26,13 @@ public class MenuActivity extends BaseActivity {
 	public void initComponents() {
 		backgroundMusic = MediaPlayer.create(this, R.raw.menu_music);
 		click_sound  = MediaPlayer.create(this, R.raw.menu_button_click);
-		//backgroundMusic.start();
+		backgroundMusic.start();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		//backgroundMusic.start();
+		backgroundMusic.start();
 	}
 	
 	@Override

@@ -24,8 +24,10 @@ public class BoardControl {
 	
 	public static void removeSelectedPouch() {
 		if (GameControl.Instance().currentRow == -1 || GameControl.Instance().currentCol == -1)
-			return;
-		GameControl.Instance().pouches[GameControl.Instance().currentCol][GameControl.Instance().currentRow] = -1;
+			return;		
+		GameControl.Instance().setLastSelectedIngedient();
+		GameControl.Instance().addIngredientToBag();
+		GameControl.Instance().emptySelectedPouch();
 	}
 	
 //	public static void markSelectedPouch(int x, int y) {

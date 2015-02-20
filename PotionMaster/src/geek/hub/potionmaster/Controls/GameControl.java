@@ -47,6 +47,7 @@ public class GameControl {
 	
 	public Character player = new Character();
 	public Character enemy = new Character();
+	public Character activeCharacter = new Character();
 	
 	/**Board selections**/
 	
@@ -55,6 +56,8 @@ public class GameControl {
 	
 	public int selCol = -1;
 	public int selRow = -1;
+	
+	public int lastSelectedIngredient = -1;
 	
 	/**Game initialization**/
 	
@@ -78,6 +81,21 @@ public class GameControl {
 	public void initCharacters() {
 		player = new Character();
 		enemy = new Character();
+		activeCharacter = player; /**For a while**/
+	}
+	
+	/**Public methods**/
+	public void setLastSelectedIngedient() {
+		lastSelectedIngredient = pouches[currentCol][currentRow];
+	}
+	
+	public void addIngredientToBag() {
+		activeCharacter.bag.put(lastSelectedIngredient, 
+				(activeCharacter.bag.containsKey(lastSelectedIngredient) ? activeCharacter.bag.get(lastSelectedIngredient) : 0) + 1);
+	}
+	
+	public void emptySelectedPouch() {
+		pouches[currentCol][currentRow] = -1;
 	}
 	
 	/**Thread classes**/	
@@ -126,8 +144,7 @@ public class GameControl {
 	    		switch(GameControl.Instance().gameStatus) {
 					case noAction:
 						break;
-					case pouchSelecting:
-						
+					case pouchSelecting:						
 						break;
 					case pouchSelected:
 						pouchSelected();

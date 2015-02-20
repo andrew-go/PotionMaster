@@ -33,18 +33,19 @@ public class GameActivity extends BaseActivity {
 		GameControl.Instance().initDrawThread();
 		GameControl.Instance().initGameThread();
 		backgroundMusic = MediaPlayer.create(this, R.raw.game_music);
-		//backgroundMusic.start();	
+		backgroundMusic.start();	
 	}
 	
 	@Override
 	public void onBackPressed() {
+		super.onBackPressed();
 		backgroundMusic.stop();
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		//backgroundMusic.start();
+		backgroundMusic.start();
 	}
 	
 	@Override

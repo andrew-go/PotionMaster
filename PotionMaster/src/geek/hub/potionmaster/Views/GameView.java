@@ -4,6 +4,8 @@ import geek.hub.potionmaster.R;
 import geek.hub.potionmaster.Controls.GameControl;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -23,6 +25,8 @@ public class GameView extends View {
 	private Drawable pouchActiveImage;
 	
 	private Drawable pouchOpenedImage;
+	
+	private Drawable pristImage; 
 	
 	public Drawable getBoardImage() {
 		return boardImage == null 
@@ -52,6 +56,12 @@ public class GameView extends View {
 		return pouchOpenedImage == null 
 				? pouchOpenedImage = context.getResources().getDrawable(R.drawable.pouch_opened) 
 				: pouchOpenedImage;
+	}
+	
+	public Drawable getPristImage() {
+		return pristImage == null 
+				? pristImage = context.getResources().getDrawable(R.drawable.prist) 
+				: pristImage;
 	}
 	
 	
@@ -88,6 +98,7 @@ public class GameView extends View {
 				break;
 			case ingredientDisplaying:
 				drawBigPouch(canvas);
+				drawSelectedIngredient(canvas);
 				break;
 			case actionOffer:
 				break;
@@ -103,6 +114,7 @@ public class GameView extends View {
 			drawBackGround(canvas);
 			drawBoard(canvas);
 			drawPouches(canvas);
+			drawCharacters(canvas);
 	}
 	
 	private void drawBackGround(Canvas canvas) {
@@ -142,6 +154,12 @@ public class GameView extends View {
 			}
 	}
 	
+	private void drawCharacters(Canvas canvas) {
+		getPristImage();
+		pristImage.setBounds(160, 440, pristImage.getMinimumWidth() + 160,  pristImage.getMinimumHeight() + 440);
+		pristImage.draw(canvas);
+	}
+	
 	private void drawActivePouch(Canvas canvas) {
 		if (GameControl.Instance().currentRow == -1 || GameControl.Instance().currentCol == -1)
 			return;
@@ -171,6 +189,14 @@ public class GameView extends View {
 				pouchesStartPoint.x + pouchOpenedImage.getMinimumWidth() + 40, 
 				pouchesStartPoint.y + pouchOpenedImage.getMinimumHeight() + 40);
 		pouchOpenedImage.draw(canvas);
+	}
+	
+	private void drawSelectedIngredient(Canvas canvas) {
+		Paint paint = new Paint();
+		paint.setTextSize(50);
+		paint.setColor(Color.RED);
+		canvas.drawText(String.format("%d", GameControl.Instance().lastSelectedIngredient), 
+				pouchesStartPoint.x + 400, pouchesStartPoint.y + 400, paint);
 	}
 	
 	private void getPouchesStartPoint() {
