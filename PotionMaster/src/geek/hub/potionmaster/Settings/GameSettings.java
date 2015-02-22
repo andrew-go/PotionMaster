@@ -10,5 +10,7 @@ public class GameSettings {
 	
 	public boolean isMusicOn = false;
 	public boolean isSoundsOn = true;
+	
+	public int pouchCount = 25;
 
 }

@@ -19,6 +19,7 @@ public class MenuActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_menu);
 		initComponents();
+		startMusic();
 	}
 	
 	@Override
@@ -32,7 +33,8 @@ public class MenuActivity extends BaseActivity {
 	public void btStartGameClick(View view) {
 		Intent intent = new Intent(getBaseContext(), GameActivity.class);
 		startActivity(intent);
-		btClickSound.start();
+		/**TODO enabled for a while**/
+		//btClickSound.start();
 	}
 	
 }

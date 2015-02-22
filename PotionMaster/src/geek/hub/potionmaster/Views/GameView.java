@@ -1,5 +1,9 @@
 package geek.hub.potionmaster.Views;
 
+import java.util.HashMap;
+import java.util.Map.Entry;
+
+import geek.hub.potionmaster.Ingredients;
 import geek.hub.potionmaster.R;
 import geek.hub.potionmaster.Controls.GameControl;
 import android.content.Context;
@@ -16,6 +20,8 @@ public class GameView extends View {
 
 	Context context;
 	
+	Paint paint = new Paint();
+	
 	private Drawable backgroundImage;
 	private Drawable boardImage;
 	
@@ -26,7 +32,8 @@ public class GameView extends View {
 	
 	private Drawable pouchOpenedImage;
 	
-	private Drawable pristImage;
+	private Drawable playerImage;
+	private Drawable enemyImage;
 	
 	private Drawable actionPanelImage;
 	
@@ -34,6 +41,8 @@ public class GameView extends View {
 	private Drawable btAttackClickedImage;
 	private Drawable btSpellImage;
 	private Drawable btSpellClickedImage;
+	
+	private Drawable inventoryImage;
 	
 	public Drawable getBoardImage() {
 		return boardImage == null 
@@ -65,10 +74,16 @@ public class GameView extends View {
 				: pouchOpenedImage;
 	}
 	
-	public Drawable getPristImage() {
-		return pristImage == null 
-				? pristImage = context.getResources().getDrawable(R.drawable.prist) 
-				: pristImage;
+	public Drawable getPlayerImage() {
+		return playerImage == null 
+				? playerImage = context.getResources().getDrawable(R.drawable.player) 
+				: playerImage;
+	}
+	
+	public Drawable getEnemyImage() {
+		return enemyImage == null 
+				? enemyImage = context.getResources().getDrawable(R.drawable.enemy) 
+				: enemyImage;
 	}
 	
 	public Drawable getActionPanelImage() {
@@ -99,7 +114,13 @@ public class GameView extends View {
 		return btSpellClickedImage == null 
 				? btSpellClickedImage = context.getResources().getDrawable(R.drawable.bt_spell_clicked) 
 				: btSpellClickedImage;
-	}		
+	}
+	
+	public Drawable getInventoryImage() {
+		return inventoryImage == null 
+				? inventoryImage = context.getResources().getDrawable(R.drawable.inventory) 
+				: inventoryImage;
+	}	
 	
 	public Point pouchesStartPoint; 
 	
@@ -140,16 +161,22 @@ public class GameView extends View {
 				drawBtAttack(canvas);
 				drawBtSpell(canvas);
 				break;
-			case attacking:
+			case attackSelected:
 				drawActivePanel(canvas);
 				drawBtAttackClicked(canvas);
 				drawBtSpell(canvas);
 				break;
-			case spelling:
+			case attacking:
+				break;
+			case spellSelected:				
 				drawActivePanel(canvas);
 				drawBtAttack(canvas);
 				drawBtSpellClicked(canvas);
 				break;
+			case inventoryDisplaying:
+				drawInventory(canvas);
+				drawIngredients(canvas);
+				break;			
 		}
 
 	}
@@ -159,6 +186,7 @@ public class GameView extends View {
 			drawBoard(canvas);
 			drawPouches(canvas);
 			drawCharacters(canvas);
+			drawHealthPoints(canvas);
 	}
 	
 	private void drawBackGround(Canvas canvas) {
@@ -208,9 +236,34 @@ public class GameView extends View {
 	/**TODO Remove this bullshit numbers**/
 	
 	private void drawCharacters(Canvas canvas) {
-		getPristImage();
-		pristImage.setBounds(160, 440, pristImage.getMinimumWidth() + 160,  pristImage.getMinimumHeight() + 440);
-		pristImage.draw(canvas);
+		drawPlayer(canvas);
+		drawEnemy(canvas);
+	}
+	
+	private void drawPlayer(Canvas canvas) {
+		getPlayerImage();
+		playerImage.setBounds(160, 440, playerImage.getMinimumWidth() + 160,  playerImage.getMinimumHeight() + 440);
+		playerImage.draw(canvas);
+	}
+	
+	private void drawEnemy(Canvas canvas) {
+		getEnemyImage();
+		enemyImage.setBounds(1520, 440, enemyImage.getMinimumWidth() + 1520,  enemyImage.getMinimumHeight() + 440);
+		enemyImage.draw(canvas);
+	}
+	
+	private void drawHealthPoints(Canvas canvas) {
+		paint.setColor(Color.YELLOW);
+		paint.setTextSize(50);
+		canvas.drawText(String.valueOf(GameControl.Instance().player.currentHealth), 0, 40, paint);
+		paint.setColor(Color.RED);
+		canvas.drawRect(0, 40, (400 * ((float) GameControl.Instance().player.currentHealth / (float) GameControl.Instance().player.health)), 80, paint);
+		
+		paint.setColor(Color.YELLOW);
+		paint.setTextSize(50);
+		canvas.drawText(String.valueOf(GameControl.Instance().enemy.currentHealth), 1840, 40, paint);
+		paint.setColor(Color.RED);
+		canvas.drawRect(1920 - (400 * ((float) GameControl.Instance().enemy.currentHealth / (float) GameControl.Instance().enemy.health)), 40, 1920, 80, paint);
 	}
 	
 	private void drawActivePouch(Canvas canvas) {
@@ -245,7 +298,6 @@ public class GameView extends View {
 	}
 	
 	private void drawSelectedIngredient(Canvas canvas) {
-		Paint paint = new Paint();
 		paint.setTextSize(50);
 		paint.setColor(Color.RED);
 		canvas.drawText(String.format("%d", GameControl.Instance().lastSelectedIngredient), 
@@ -289,11 +341,35 @@ public class GameView extends View {
 	
 	private void drawBtSpellClicked(Canvas canvas) {
 		getBtSpellClickedImage();
-		btSpellClickedImage.setBounds(1180, 
+		btSpellClickedImage.setBounds(1180,
 				460, 
 				btSpellClickedImage.getMinimumWidth() + 1180, 
 				btSpellClickedImage.getMinimumHeight() + 460);
 		btSpellClickedImage.draw(canvas);
+	}
+	
+	private void drawInventory(Canvas canvas) {
+		getInventoryImage();
+		inventoryImage.setBounds(180, 
+				60, 
+				inventoryImage.getMinimumWidth() + 180, 
+				inventoryImage.getMinimumHeight() + 60);
+		inventoryImage.draw(canvas);
+	}
+	
+	/**TODO stop redrawing till touch**/
+	private void drawIngredients(Canvas canvas) {
+		int counter = 0;
+		Drawable ingredientImage; 
+		for(Entry<Integer, Integer> entry : GameControl.Instance().activeCharacter.inventory.entrySet()) {
+			ingredientImage = Ingredients.Instance().getIgredientImage(entry.getKey());
+			ingredientImage.setBounds(220 + counter * 180, 
+					100, 
+					ingredientImage.getMinimumWidth() + 220 + counter * 180, 
+					ingredientImage.getMinimumHeight() + 100);
+			ingredientImage.draw(canvas);
+			counter++;
+		}
 	}
 
 }

@@ -3,7 +3,7 @@ package geek.hub.potionmaster.Activities;
 import geek.hub.potionmaster.R;
 import geek.hub.potionmaster.Controls.GameControl;
 import geek.hub.potionmaster.Controls.GameControl.eGameStatus;
-import geek.hub.potionmaster.Controls.GameItemControls.ActionPanel;
+import geek.hub.potionmaster.Controls.GameItemControls.ActionPanelControl;
 import geek.hub.potionmaster.Controls.GameItemControls.BoardControl;
 import geek.hub.potionmaster.Views.GameView;
 import android.media.MediaPlayer;
@@ -25,12 +25,13 @@ public class GameActivity extends BaseActivity {
 	
 	@Override
 	public void initComponents() {
-		GameControl.Instance().initPouches();
+		BoardControl.fillUp();
 		initGameView();
 		GameControl.Instance().initDrawThread();
 		GameControl.Instance().initGameThread();
+		GameControl.Instance().initCharacters();
 		backgroundMusic = MediaPlayer.create(this, R.raw.game_music);
-	}	
+	}
 	
 	/**Events**/
 	
@@ -69,17 +70,24 @@ public class GameActivity extends BaseActivity {
 						GameControl.Instance().gameStatus = eGameStatus.actionOffer;
 							return false;
 					case actionOffer:
-						if (ActionPanel.isBtAttackClicked(event)) 
+						if (ActionPanelControl.isBtAttackClicked(event)) 
 						{
-							GameControl.Instance().gameStatus = eGameStatus.attacking;
+							GameControl.Instance().gameStatus = eGameStatus.attackSelected;
 							return true;
 						}
-						if (ActionPanel.isBtSpellClicked(event)) 
+						if (ActionPanelControl.isBtSpellClicked(event)) 
 						{
-							GameControl.Instance().gameStatus = eGameStatus.spelling;
+							GameControl.Instance().gameStatus = eGameStatus.spellSelected;
 							return true;
 						}
-						return false;						
+						return false;
+					case attackSelected:
+					case spellSelected:
+					case attacking:
+						return false;
+					case inventoryDisplaying:
+						GameControl.Instance().gameStatus = eGameStatus.noAction;
+						return true;
 					default:
 						break;
 				}

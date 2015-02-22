@@ -1,6 +1,7 @@
 package geek.hub.potionmaster.Controls;
 
 import geek.hub.potionmaster.Controls.GameItemControls.BoardControl;
+import geek.hub.potionmaster.Controls.GameItemControls.CharacterControl;
 import geek.hub.potionmaster.Models.Character;
 import geek.hub.potionmaster.Views.GameView;
 
@@ -26,9 +27,11 @@ public class GameControl {
 		pouchSelecting,
 		pouchSelected, 
 		ingredientDisplaying, 
-		actionOffer, 
-		attacking, 
-		spelling		
+		actionOffer,
+		attackSelected,
+		attacking,
+		spellSelected,
+		inventoryDisplaying		
 	};
 	
 	/**Members**/
@@ -45,9 +48,10 @@ public class GameControl {
 	
 	public int[][] pouches = new int[5][5];
 	
-	public Character player = new Character();
-	public Character enemy = new Character();
-	public Character activeCharacter = new Character();
+	public Character player;
+	public Character enemy;
+	public Character activeCharacter;
+	public Character oppositeCharacter;
 	
 	/**Board selections**/
 	
@@ -59,13 +63,15 @@ public class GameControl {
 	
 	public int lastSelectedIngredient = -1;
 	
+	public int removedPouchesCount = 0;
+	
 	/**Game initialization**/
 	
 	public void initPouches() {
 		Random random = new Random();
 		for (int i = 0; i < pouches.length; i++)
 			for (int j = 0; j < pouches[i].length; j++)
-				pouches[i][j] = random.nextInt(20) + 1;
+				pouches[i][j] = random.nextInt(5) + 1;
 	}
 	
 	public void initDrawThread() {
@@ -79,9 +85,10 @@ public class GameControl {
 	}
 	
 	public void initCharacters() {
-		player = new Character();
-		enemy = new Character();
+		player = new Character("player");
+		enemy = new Character("enemy");
 		activeCharacter = player; /**TODO For a while**/
+		oppositeCharacter = enemy;
 	}
 	
 	/**Public methods**/
@@ -90,16 +97,12 @@ public class GameControl {
 	}
 	
 	public void addIngredientToBag() {
-		activeCharacter.bag.put(lastSelectedIngredient, 
-				(activeCharacter.bag.containsKey(lastSelectedIngredient) ? activeCharacter.bag.get(lastSelectedIngredient) : 0) + 1);
+		activeCharacter.inventory.put(lastSelectedIngredient, 
+				(activeCharacter.inventory.containsKey(lastSelectedIngredient) ? activeCharacter.inventory.get(lastSelectedIngredient) : 0) + 1);
 	}
 	
 	public void emptySelectedPouch() {
 		pouches[currentCol][currentRow] = -1;
-	}
-	
-	public void giveTurnToNextCharacter() {
-		activeCharacter = activeCharacter.equals(player) ? enemy : player; 
 	}
 	
 	/**Thread classes**/	
@@ -159,11 +162,17 @@ public class GameControl {
 					case actionOffer:						
 						actionOffer();
 						break;
+					case attackSelected:
+						attackSelected();
+						break;
 					case attacking:
 						attacking();
 						break;
-					case spelling:
-						spelling();
+					case spellSelected:
+						spellSelected();
+						break;
+					case inventoryDisplaying:
+						inventoryDisplaying();
 						break;
 	    		}
 	    	}
@@ -202,25 +211,38 @@ public class GameControl {
 			/**actionOffer**/	    	
 	    }
 	    
-	    private void attacking() {
-	    	/**attacking**/
+	    private void attackSelected() {
+	    	/**attackSelected**/
 			try {
 				sleep(500);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			GameControl.Instance().giveTurnToNextCharacter();
+			GameControl.Instance().gameStatus = eGameStatus.attacking;
+	    }
+	    
+	    private void attacking() {
+			/**TODO Maybe I should make this in Character class**/
+			CharacterControl.attack();			
+			CharacterControl.endTurn();
+			if (BoardControl.isEmpty())
+				BoardControl.fillUp();
 	    	GameControl.Instance().gameStatus = eGameStatus.noAction;
 	    }
 	    
-	    private void spelling() {
-	    	/**spelling**/
+	    private void spellSelected() {
+	    	/**spellSelected**/
 			try {
 				sleep(500);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-	    	GameControl.Instance().gameStatus = eGameStatus.noAction;
+	    	GameControl.Instance().gameStatus = eGameStatus.inventoryDisplaying;
+	    }
+	    
+	    private void inventoryDisplaying() {
+	    	/**inventoryDisplaying**/
+//	    	GameControl.Instance().gameStatus = eGameStatus.noAction;
 	    }
 	    
 	}

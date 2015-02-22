@@ -1,13 +1,17 @@
 package geek.hub.potionmaster.Models;
 
-import geek.hub.potionmaster.Interfaces.ICharactereble;
+import java.util.HashMap;
 
-import java.util.Hashtable;
+public class Character {
 
-public class Character implements ICharactereble{
-
-	int health = 100;
-	int attack = 5;
-	public Hashtable<Integer, Integer> bag = new Hashtable<>();
+	public int health = 100;
+	public int currentHealth = 100;
+	public int attack = 5;
+	String name;
+	public HashMap<Integer, Integer> inventory = new HashMap<>();
+	
+	public Character(String name) {
+		this.name = name;
+	}
 
 }

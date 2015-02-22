@@ -49,13 +49,13 @@ public class BaseActivity extends FragmentActivity {
 	}
 	
 	public void startMusic() {
-		if (backgroundMusic == null || !GameSettings.Instance().isMusicOn)
+		if (backgroundMusic == null || backgroundMusic.isPlaying() || !GameSettings.Instance().isMusicOn)
 			return;
 		backgroundMusic.start();
 	}
 	
 	public void stopMusic() {
-		if (backgroundMusic == null || !GameSettings.Instance().isMusicOn)
+		if (backgroundMusic == null || !backgroundMusic.isPlaying() || !GameSettings.Instance().isMusicOn)
 			return;
 		backgroundMusic.stop();
 	}

@@ -1,6 +1,7 @@
 package geek.hub.potionmaster.Controls.GameItemControls;
 
 import geek.hub.potionmaster.Controls.GameControl;
+import geek.hub.potionmaster.Settings.GameSettings;
 import android.view.MotionEvent;
 
 
@@ -28,6 +29,7 @@ public class BoardControl {
 		GameControl.Instance().setLastSelectedIngedient();
 		GameControl.Instance().addIngredientToBag();
 		GameControl.Instance().emptySelectedPouch();
+		GameControl.Instance().removedPouchesCount++;
 	}
 	
 	public static boolean isPouchExist(int x, int y) {
@@ -44,6 +46,14 @@ public class BoardControl {
 				|| (event.getY() > GameControl.Instance().gameView.pouchesStartPoint.y + (GameControl.Instance().gameView.getBoardImage().getMinimumHeight() + 10/*pouch margin*/ - 160 * 2/*board margin*/)))
 			return false;
 		return true;
+	}
+	
+	public static boolean isEmpty() {
+		return GameControl.Instance().removedPouchesCount == GameSettings.Instance().pouchCount;
+	}
+	
+	public static void fillUp() {
+		GameControl.Instance().initPouches();
 	}
 
 }
