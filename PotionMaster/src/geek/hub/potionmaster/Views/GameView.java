@@ -26,7 +26,14 @@ public class GameView extends View {
 	
 	private Drawable pouchOpenedImage;
 	
-	private Drawable pristImage; 
+	private Drawable pristImage;
+	
+	private Drawable actionPanelImage;
+	
+	private Drawable btAttackImage;
+	private Drawable btAttackClickedImage;
+	private Drawable btSpellImage;
+	private Drawable btSpellClickedImage;
 	
 	public Drawable getBoardImage() {
 		return boardImage == null 
@@ -64,7 +71,35 @@ public class GameView extends View {
 				: pristImage;
 	}
 	
+	public Drawable getActionPanelImage() {
+		return actionPanelImage == null 
+				? actionPanelImage = context.getResources().getDrawable(R.drawable.action_panel) 
+				: actionPanelImage;
+	}
 	
+	public Drawable getBtAttackImage() {
+		return btAttackImage == null 
+					? btAttackImage = context.getResources().getDrawable(R.drawable.bt_attack) 
+					: btAttackImage;
+	}
+	
+	public Drawable getBtAttackClickedImage() {
+			return btAttackClickedImage == null 
+					? btAttackClickedImage = context.getResources().getDrawable(R.drawable.bt_attack_clicked) 
+					: btAttackClickedImage;
+	}
+	
+	public Drawable getBtSpellImage() {
+		return btSpellImage == null 
+				? btSpellImage = context.getResources().getDrawable(R.drawable.bt_spell) 
+				: btSpellImage;
+	}
+	
+	public Drawable getBtSpellClickedImage() {
+		return btSpellClickedImage == null 
+				? btSpellClickedImage = context.getResources().getDrawable(R.drawable.bt_spell_clicked) 
+				: btSpellClickedImage;
+	}		
 	
 	public Point pouchesStartPoint; 
 	
@@ -86,9 +121,9 @@ public class GameView extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-		drawStandartItems(canvas);
+		drawStandardItems(canvas);
 		switch(GameControl.Instance().gameStatus) {
-			case noAction:
+			case noAction:  /**TODO make drawing standard items only once**/
 				break;
 			case pouchSelecting:
 				drawActivePouch(canvas);
@@ -101,16 +136,25 @@ public class GameView extends View {
 				drawSelectedIngredient(canvas);
 				break;
 			case actionOffer:
+				drawActivePanel(canvas);
+				drawBtAttack(canvas);
+				drawBtSpell(canvas);
 				break;
 			case attacking:
+				drawActivePanel(canvas);
+				drawBtAttackClicked(canvas);
+				drawBtSpell(canvas);
 				break;
-			case inventoryDisplaying:
+			case spelling:
+				drawActivePanel(canvas);
+				drawBtAttack(canvas);
+				drawBtSpellClicked(canvas);
 				break;
 		}
 
 	}
 	
-	private void drawStandartItems(Canvas canvas) {
+	private void drawStandardItems(Canvas canvas) {
 			drawBackGround(canvas);
 			drawBoard(canvas);
 			drawPouches(canvas);
@@ -154,6 +198,15 @@ public class GameView extends View {
 			}
 	}
 	
+	private void getPouchesStartPoint() {
+		int startMargin = 160;
+		int x = boardImage.getBounds().left + startMargin;
+		int y = boardImage.getBounds().top + startMargin;
+		pouchesStartPoint = new Point(x, y);
+	}
+	
+	/**TODO Remove this bullshit numbers**/
+	
 	private void drawCharacters(Canvas canvas) {
 		getPristImage();
 		pristImage.setBounds(160, 440, pristImage.getMinimumWidth() + 160,  pristImage.getMinimumHeight() + 440);
@@ -174,8 +227,8 @@ public class GameView extends View {
 	}
 	
 	private void drawSelectedPouch(Canvas canvas) {
-		getActivePouchImage();
-		pouchActiveImage.setBounds(pouchesStartPoint.x + GameControl.Instance().currentCol * 140, 
+		getActivePouchImage(); /**TODO Check this, maybe it would better to check member on null**/
+		pouchActiveImage.setBounds(pouchesStartPoint.x + GameControl.Instance().currentCol * 140, /**TODO Also maybe it should be better to set bounds in init image method**/
 				pouchesStartPoint.y + GameControl.Instance().currentRow * 140, 
 				pouchesStartPoint.x + pouchImage.getMinimumWidth() + GameControl.Instance().currentCol * 140, 
 				pouchesStartPoint.y + pouchImage.getMinimumHeight() + GameControl.Instance().currentRow * 140);
@@ -199,11 +252,48 @@ public class GameView extends View {
 				pouchesStartPoint.x + 400, pouchesStartPoint.y + 400, paint);
 	}
 	
-	private void getPouchesStartPoint() {
-		int startMargin = 160;
-		int x = boardImage.getBounds().left + startMargin;
-		int y = boardImage.getBounds().top + startMargin;
-		pouchesStartPoint = new Point(x, y);
+	private void drawActivePanel(Canvas canvas) {
+		getActionPanelImage();
+		actionPanelImage.setBounds(520, 
+				400, 
+				actionPanelImage.getMinimumWidth() + 520, 
+				actionPanelImage.getMinimumHeight() + 400);
+		actionPanelImage.draw(canvas);
+	}
+	
+	private void drawBtAttack(Canvas canvas) {
+		getBtAttackImage();
+		btAttackImage.setBounds(580, 
+				460, 
+				btAttackImage.getMinimumWidth() + 580, 
+				btAttackImage.getMinimumHeight() + 460);
+		btAttackImage.draw(canvas);
+	}
+	private void drawBtAttackClicked(Canvas canvas) {
+		getBtAttackClickedImage();
+		btAttackClickedImage.setBounds(580, 
+				460, 
+				btAttackClickedImage.getMinimumWidth() + 580, 
+				btAttackClickedImage.getMinimumHeight() + 460);
+		btAttackClickedImage.draw(canvas);
+	}
+	
+	private void drawBtSpell(Canvas canvas) {
+		getBtSpellImage();
+		btSpellImage.setBounds(1180, 
+				460, 
+				btSpellImage.getMinimumWidth() + 1180, 
+				btSpellImage.getMinimumHeight() + 460);
+		btSpellImage.draw(canvas);
+	}
+	
+	private void drawBtSpellClicked(Canvas canvas) {
+		getBtSpellClickedImage();
+		btSpellClickedImage.setBounds(1180, 
+				460, 
+				btSpellClickedImage.getMinimumWidth() + 1180, 
+				btSpellClickedImage.getMinimumHeight() + 460);
+		btSpellClickedImage.draw(canvas);
 	}
 
 }

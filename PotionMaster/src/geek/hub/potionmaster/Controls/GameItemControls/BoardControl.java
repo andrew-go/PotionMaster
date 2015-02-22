@@ -30,18 +30,14 @@ public class BoardControl {
 		GameControl.Instance().emptySelectedPouch();
 	}
 	
-//	public static void markSelectedPouch(int x, int y) {
-//		GameControl.Instance().currentCol = getColIndex(x);
-//		GameControl.Instance().currentRow = getRowIndex(y);
-//	}
-	
 	public static boolean isPouchExist(int x, int y) {
 		GameControl.Instance().currentCol = getColIndex(x);
 		GameControl.Instance().currentRow = getRowIndex(y);
 		return GameControl.Instance().pouches[GameControl.Instance().currentCol][GameControl.Instance().currentRow] != -1;
 	}
 	
-	public static boolean isTouchOn(MotionEvent event) {
+	/**TODO check this. Maybe it would be better to use bounds - GameControl.Instance().gameView.getBoardImage().getBounds()**/
+	public static boolean isTouchOn(MotionEvent event) {  
 		if ((event.getX() < GameControl.Instance().gameView.pouchesStartPoint.x - 10/*pouch merge*/)
 				|| (event.getX() > GameControl.Instance().gameView.pouchesStartPoint.x + GameControl.Instance().gameView.getBoardImage().getMinimumWidth() + 10/*pouch margin*/ - 160 * 2/*board margin*/)
 				|| (event.getY() < GameControl.Instance().gameView.pouchesStartPoint.y - 10/*pouch merge*/)

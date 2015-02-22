@@ -3,6 +3,7 @@ package geek.hub.potionmaster.Activities;
 import geek.hub.potionmaster.R;
 import geek.hub.potionmaster.Controls.GameControl;
 import geek.hub.potionmaster.Controls.GameControl.eGameStatus;
+import geek.hub.potionmaster.Controls.GameItemControls.ActionPanel;
 import geek.hub.potionmaster.Controls.GameItemControls.BoardControl;
 import geek.hub.potionmaster.Views.GameView;
 import android.media.MediaPlayer;
@@ -12,10 +13,6 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 
 public class GameActivity extends BaseActivity {
-	
-	/**Members**/
-	
-	MediaPlayer backgroundMusic;
 	
 	/**Virtual methods**/
 
@@ -33,26 +30,7 @@ public class GameActivity extends BaseActivity {
 		GameControl.Instance().initDrawThread();
 		GameControl.Instance().initGameThread();
 		backgroundMusic = MediaPlayer.create(this, R.raw.game_music);
-		backgroundMusic.start();	
-	}
-	
-	@Override
-	public void onBackPressed() {
-		super.onBackPressed();
-		backgroundMusic.stop();
-	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		backgroundMusic.start();
-	}
-	
-	@Override
-	protected void onStop() {
-		super.onStop();
-		backgroundMusic.stop();
-	}
+	}	
 	
 	/**Events**/
 	
@@ -79,12 +57,33 @@ public class GameActivity extends BaseActivity {
 			
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
-				if (GameControl.Instance().gameStatus == eGameStatus.ingredientDisplaying) {
-					GameControl.Instance().gameStatus = eGameStatus.noAction;
-					return false;
+				switch (GameControl.Instance().gameStatus) {
+					case noAction:
+					case pouchSelecting:
+						if (!BoardControl.isTouchOn(event))
+							return false;
+						break;
+					case pouchSelected:
+						return false;
+					case ingredientDisplaying:
+						GameControl.Instance().gameStatus = eGameStatus.actionOffer;
+							return false;
+					case actionOffer:
+						if (ActionPanel.isBtAttackClicked(event)) 
+						{
+							GameControl.Instance().gameStatus = eGameStatus.attacking;
+							return true;
+						}
+						if (ActionPanel.isBtSpellClicked(event)) 
+						{
+							GameControl.Instance().gameStatus = eGameStatus.spelling;
+							return true;
+						}
+						return false;						
+					default:
+						break;
 				}
-				if (!BoardControl.isTouchOn(event))
-					return false;
+				
 				switch (event.getAction()) {
 				case MotionEvent.ACTION_DOWN:					
 					break;

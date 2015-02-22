@@ -28,7 +28,7 @@ public class GameControl {
 		ingredientDisplaying, 
 		actionOffer, 
 		attacking, 
-		inventoryDisplaying		
+		spelling		
 	};
 	
 	/**Members**/
@@ -81,7 +81,7 @@ public class GameControl {
 	public void initCharacters() {
 		player = new Character();
 		enemy = new Character();
-		activeCharacter = player; /**For a while**/
+		activeCharacter = player; /**TODO For a while**/
 	}
 	
 	/**Public methods**/
@@ -96,6 +96,10 @@ public class GameControl {
 	
 	public void emptySelectedPouch() {
 		pouches[currentCol][currentRow] = -1;
+	}
+	
+	public void giveTurnToNextCharacter() {
+		activeCharacter = activeCharacter.equals(player) ? enemy : player; 
 	}
 	
 	/**Thread classes**/	
@@ -152,11 +156,14 @@ public class GameControl {
 					case ingredientDisplaying:
 						ingredientDisplaying();
 						break;
-					case actionOffer:
+					case actionOffer:						
+						actionOffer();
 						break;
 					case attacking:
+						attacking();
 						break;
-					case inventoryDisplaying:
+					case spelling:
+						spelling();
 						break;
 	    		}
 	    	}
@@ -189,6 +196,31 @@ public class GameControl {
 	    
 	    private void ingredientDisplaying() {
 			/**ingredientDisplaying**/	    	
+	    }
+	    
+	    private void actionOffer() {
+			/**actionOffer**/	    	
+	    }
+	    
+	    private void attacking() {
+	    	/**attacking**/
+			try {
+				sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			GameControl.Instance().giveTurnToNextCharacter();
+	    	GameControl.Instance().gameStatus = eGameStatus.noAction;
+	    }
+	    
+	    private void spelling() {
+	    	/**spelling**/
+			try {
+				sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+	    	GameControl.Instance().gameStatus = eGameStatus.noAction;
 	    }
 	    
 	}
