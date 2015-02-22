@@ -1,7 +1,6 @@
 package geek.hub.potionmaster;
 
 import geek.hub.potionmaster.Controls.GameControl;
-import geek.hub.potionmaster.Views.GameView;
 import android.graphics.drawable.Drawable;
 
 
@@ -29,7 +28,7 @@ public class Ingredients {
 	 */
 
 	/**TODO maybe I need to move this into GameView or create specific class for images**/
-	public Drawable getIgredientImage(int index) {
+	public Drawable getIngredientImage(int index) {
 		switch(index) {
 			case 1:
 				return fireImage == null 

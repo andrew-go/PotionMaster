@@ -33,8 +33,8 @@ public class MenuActivity extends BaseActivity {
 	public void btStartGameClick(View view) {
 		Intent intent = new Intent(getBaseContext(), GameActivity.class);
 		startActivity(intent);
-		/**TODO enabled for a while**/
-		//btClickSound.start();
+		btClickSound.start();
+		stopMusic();
 	}
 	
 }

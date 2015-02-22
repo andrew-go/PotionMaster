@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import geek.hub.potionmaster.Ingredients;
 import geek.hub.potionmaster.R;
 import geek.hub.potionmaster.Controls.GameControl;
+import geek.hub.potionmaster.Controls.GameItemControls.InventoryControl;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -43,6 +44,8 @@ public class GameView extends View {
 	private Drawable btSpellClickedImage;
 	
 	private Drawable inventoryImage;
+	
+	private Drawable ingredientImage;
 	
 	public Drawable getBoardImage() {
 		return boardImage == null 
@@ -176,7 +179,12 @@ public class GameView extends View {
 			case inventoryDisplaying:
 				drawInventory(canvas);
 				drawIngredients(canvas);
-				break;			
+				break;
+			case ingredientDragging:
+				drawInventory(canvas);
+				drawIngredients(canvas);
+				drawDraggingIngredient(canvas);
+				break;	
 		}
 
 	}
@@ -358,18 +366,29 @@ public class GameView extends View {
 	}
 	
 	/**TODO stop redrawing till touch**/
-	private void drawIngredients(Canvas canvas) {
-		int counter = 0;
-		Drawable ingredientImage; 
-		for(Entry<Integer, Integer> entry : GameControl.Instance().activeCharacter.inventory.entrySet()) {
-			ingredientImage = Ingredients.Instance().getIgredientImage(entry.getKey());
-			ingredientImage.setBounds(220 + counter * 180, 
-					100, 
-					ingredientImage.getMinimumWidth() + 220 + counter * 180, 
-					ingredientImage.getMinimumHeight() + 100);
-			ingredientImage.draw(canvas);
-			counter++;
-		}
+	private void drawIngredients(Canvas canvas) {		
+		for (int i = 0; i < GameControl.Instance().activeCharacter.ingredients.length; i++)
+			for (int j = 0; j < GameControl.Instance().activeCharacter.ingredients[i].length; j++) 
+			{
+				if (GameControl.Instance().activeCharacter.ingredients[i][j] == 0)
+					return;					
+				ingredientImage = Ingredients.Instance().getIngredientImage(GameControl.Instance().activeCharacter.ingredients[i][j]);
+				ingredientImage.setBounds(220 + i * 180, 
+						100 + j * 180, 
+						ingredientImage.getMinimumWidth() + 220 + i * 180, 
+						ingredientImage.getMinimumHeight() + 100 + j * 180);
+				ingredientImage.draw(canvas);
+			}
+	}
+	
+	private void drawDraggingIngredient(Canvas canvas) {
+		InventoryControl.Instance().getDraggingIngredient();
+		ingredientImage = Ingredients.Instance().getIngredientImage(GameControl.Instance().activeCharacter.ingredients[InventoryControl.Instance().selCol][InventoryControl.Instance().selRow]);
+		ingredientImage.setBounds(GameControl.Instance().curX - ingredientImage.getMinimumWidth() + InventoryControl.Instance().selCol * 180, 
+				GameControl.Instance().curY - ingredientImage.getMinimumHeight() + InventoryControl.Instance().selRow * 180, 
+				ingredientImage.getMinimumWidth() + GameControl.Instance().curX - ingredientImage.getMinimumWidth() + InventoryControl.Instance().selCol * 180, 
+				ingredientImage.getIntrinsicHeight() + GameControl.Instance().curY - ingredientImage.getMinimumHeight() + InventoryControl.Instance().selRow * 180);
+		ingredientImage.draw(canvas);
 	}
 
 }

@@ -1,6 +1,7 @@
 package geek.hub.potionmaster.Controls.GameItemControls;
 
 import geek.hub.potionmaster.Controls.GameControl;
+import geek.hub.potionmaster.Controls.GameControl.eGameStatus;
 import geek.hub.potionmaster.Settings.GameSettings;
 import android.view.MotionEvent;
 
@@ -27,7 +28,7 @@ public class BoardControl {
 		if (GameControl.Instance().currentRow == -1 || GameControl.Instance().currentCol == -1)
 			return;		
 		GameControl.Instance().setLastSelectedIngedient();
-		GameControl.Instance().addIngredientToBag();
+		InventoryControl.addIngredient();
 		GameControl.Instance().emptySelectedPouch();
 		GameControl.Instance().removedPouchesCount++;
 	}
@@ -45,6 +46,8 @@ public class BoardControl {
 				|| (event.getY() < GameControl.Instance().gameView.pouchesStartPoint.y - 10/*pouch merge*/)
 				|| (event.getY() > GameControl.Instance().gameView.pouchesStartPoint.y + (GameControl.Instance().gameView.getBoardImage().getMinimumHeight() + 10/*pouch margin*/ - 160 * 2/*board margin*/)))
 			return false;
+		if (GameControl.Instance().gameStatus != eGameStatus.pouchSelecting)
+			GameControl.Instance().gameStatus = eGameStatus.pouchSelecting;
 		return true;
 	}
 	

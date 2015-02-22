@@ -8,7 +8,8 @@ public class Character {
 	public int currentHealth = 100;
 	public int attack = 5;
 	String name;
-	public HashMap<Integer, Integer> inventory = new HashMap<>();
+	public HashMap<Integer, Integer> inventory = new HashMap<Integer, Integer>();
+	public int[][] ingredients = new int[5][5];
 	
 	public Character(String name) {
 		this.name = name;

@@ -6,6 +6,7 @@ import geek.hub.potionmaster.Models.Character;
 import geek.hub.potionmaster.Views.GameView;
 
 import java.util.Random;
+import java.util.ResourceBundle.Control;
 
 import android.view.View;
 
@@ -31,7 +32,8 @@ public class GameControl {
 		attackSelected,
 		attacking,
 		spellSelected,
-		inventoryDisplaying		
+		inventoryDisplaying,
+		ingredientDragging
 	};
 	
 	/**Members**/
@@ -60,6 +62,9 @@ public class GameControl {
 	
 	public int selCol = -1;
 	public int selRow = -1;
+	
+	public int curX = -1;
+	public int curY = -1;
 	
 	public int lastSelectedIngredient = -1;
 	
@@ -96,11 +101,6 @@ public class GameControl {
 		lastSelectedIngredient = pouches[currentCol][currentRow];
 	}
 	
-	public void addIngredientToBag() {
-		activeCharacter.inventory.put(lastSelectedIngredient, 
-				(activeCharacter.inventory.containsKey(lastSelectedIngredient) ? activeCharacter.inventory.get(lastSelectedIngredient) : 0) + 1);
-	}
-	
 	public void emptySelectedPouch() {
 		pouches[currentCol][currentRow] = -1;
 	}
@@ -124,7 +124,10 @@ public class GameControl {
 	    public void run() {
 	    	while(run) {
 				try {
-					sleep(100);
+					if (GameControl.Instance().gameStatus == eGameStatus.ingredientDragging)
+						sleep(500);
+					else
+						sleep(100);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -178,7 +181,7 @@ public class GameControl {
 	    	}
 	    	/**TODO maybe it will decrease memory usage**/
 			try {
-				sleep(100);
+				sleep(50);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -242,7 +245,6 @@ public class GameControl {
 	    
 	    private void inventoryDisplaying() {
 	    	/**inventoryDisplaying**/
-//	    	GameControl.Instance().gameStatus = eGameStatus.noAction;
 	    }
 	    
 	}
