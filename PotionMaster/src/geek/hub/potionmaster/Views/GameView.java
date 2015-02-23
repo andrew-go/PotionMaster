@@ -1,11 +1,10 @@
 package geek.hub.potionmaster.Views;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
-
 import geek.hub.potionmaster.Ingredients;
 import geek.hub.potionmaster.R;
 import geek.hub.potionmaster.Controls.GameControl;
+import geek.hub.potionmaster.Controls.GameControl.eGameStatus;
+import geek.hub.potionmaster.Controls.GameItemControls.CombinationBoardControl;
 import geek.hub.potionmaster.Controls.GameItemControls.InventoryControl;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -45,7 +44,16 @@ public class GameView extends View {
 	
 	private Drawable spellPanelImage;
 	
+	private Drawable inventoryImage;
+	
+	private Drawable combinationBoardImage;
+	
 	private Drawable ingredientImage;
+	
+	private Drawable btCastImage;
+	private Drawable btCastClickedImage;
+	private Drawable btCancelImage;
+	private Drawable btCancelClickedImage;
 	
 	public Drawable getBoardImage() {
 		return boardImage == null 
@@ -119,11 +127,46 @@ public class GameView extends View {
 				: btSpellClickedImage;
 	}
 	
-	/**TODO maybe I should draw this as different objects inventory and combinationBoard**/
 	public Drawable getSpellPanelImage() {
 		return spellPanelImage == null 
 				? spellPanelImage = context.getResources().getDrawable(R.drawable.spell_panel) 
 				: spellPanelImage;
+	}
+	
+	public Drawable getInventoryImage() {
+		return inventoryImage == null 
+				? inventoryImage = context.getResources().getDrawable(R.drawable.inventory) 
+				: inventoryImage;
+	}
+	
+	public Drawable getCombinationBoardImage() {
+		return combinationBoardImage == null 
+				? combinationBoardImage = context.getResources().getDrawable(R.drawable.spell_board) 
+				: combinationBoardImage;
+	}
+	
+	public Drawable getBtCastImage() {
+		return btCastImage == null 
+				? btCastImage = context.getResources().getDrawable(R.drawable.bt_cast) 
+				: btCastImage;
+	}
+	
+	public Drawable getBtCastClickedImage() {
+		return btCastClickedImage == null 
+				? btCastClickedImage = context.getResources().getDrawable(R.drawable.bt_cast_clicked) 
+				: btCastClickedImage;
+	}
+	
+	public Drawable getBtCancelImage() {
+		return btCancelImage == null 
+				? btCancelImage = context.getResources().getDrawable(R.drawable.bt_cancel) 
+				: btCancelImage;
+	}
+	
+	public Drawable getBtCancelClickedImage() {
+		return btCancelClickedImage == null 
+				? btCancelClickedImage = context.getResources().getDrawable(R.drawable.bt_cancel_clicked) 
+				: btCancelClickedImage;
 	}	
 	
 	public Point pouchesStartPoint; 
@@ -178,14 +221,25 @@ public class GameView extends View {
 				drawBtSpellClicked(canvas);
 				break;
 			case spellPanelDisplaying:
-				drawSpellPanel(canvas);
-				drawIngredients(canvas);
+				drawSpellPanelItems(canvas);
 				break;
 			case ingredientDragging:
-				drawSpellPanel(canvas);
-				drawIngredients(canvas);
+				drawSpellPanelItems(canvas);
 				drawDraggingIngredient(canvas);
-				break;	
+				break;
+			case ingredientPutting:
+				drawSpellPanelItems(canvas);
+				break;
+			case cancelSelected:
+				drawSpellPanelItems(canvas);
+				break;
+			case castSelected:
+				drawSpellPanelItems(canvas);
+				break;
+			case casting:
+				break;
+			default:
+				break;
 		}
 
 	}
@@ -357,6 +411,22 @@ public class GameView extends View {
 		btSpellClickedImage.draw(canvas);
 	}
 	
+	private void drawSpellPanelItems(Canvas canvas) {
+		drawSpellPanel(canvas);
+		drawInventory(canvas);
+		drawCombinationBoard(canvas);
+		drawIngredients(canvas);
+		drawCombinatedIngredients(canvas);
+		if (GameControl.Instance().gameStatus == eGameStatus.castSelected)
+			drawBtCastClicked(canvas);
+		else
+			drawBtCast(canvas);
+		if (GameControl.Instance().gameStatus == eGameStatus.cancelSelected)
+			drawBtCancelClicked(canvas);
+		else
+			drawBtCancel(canvas);
+	}
+	
 	private void drawSpellPanel(Canvas canvas) {
 		getSpellPanelImage();
 		spellPanelImage.setBounds(180, 
@@ -366,6 +436,25 @@ public class GameView extends View {
 		spellPanelImage.draw(canvas);
 	}
 	
+	private void drawInventory(Canvas canvas) {
+		getInventoryImage();		
+		inventoryImage.setBounds(spellPanelImage.getBounds().left + 20, 
+				spellPanelImage.getBounds().top + 20, 
+				inventoryImage.getMinimumWidth() + spellPanelImage.getBounds().left + 20, 
+				inventoryImage.getMinimumHeight() + spellPanelImage.getBounds().top + 20);
+		inventoryImage.draw(canvas);
+	}	
+	
+	private void drawCombinationBoard(Canvas canvas) {
+		getCombinationBoardImage();
+		combinationBoardImage.setBounds(inventoryImage.getBounds().right + 40, 
+				260, 
+				combinationBoardImage.getMinimumWidth() + inventoryImage.getBounds().right + 40, 
+				combinationBoardImage.getMinimumHeight() + 260);
+		combinationBoardImage.draw(canvas);
+	}	
+	
+	
 	/**TODO stop redrawing till touch**/
 	private void drawIngredients(Canvas canvas) {		
 		for (int i = 0; i < GameControl.Instance().activeCharacter.ingredients.length; i++)
@@ -374,22 +463,73 @@ public class GameView extends View {
 				if (GameControl.Instance().activeCharacter.ingredients[i][j] == 0)
 					return;					
 				ingredientImage = Ingredients.Instance().getIngredientImage(GameControl.Instance().activeCharacter.ingredients[i][j]);
-				ingredientImage.setBounds(220 + i * 180, 
-						100 + j * 180, 
-						ingredientImage.getMinimumWidth() + 220 + i * 180, 
-						ingredientImage.getMinimumHeight() + 100 + j * 180);
+				ingredientImage.setBounds(InventoryControl.Instance().activeInventoryLeftBound + 10 + j * InventoryControl.Instance().activeIngredientSize, 
+						InventoryControl.Instance().activeInventoryTopBound + 10 + i * InventoryControl.Instance().activeIngredientSize, 
+						ingredientImage.getMinimumWidth() + InventoryControl.Instance().activeInventoryLeftBound + 10 + j * InventoryControl.Instance().activeIngredientSize, 
+						ingredientImage.getMinimumHeight() + InventoryControl.Instance().activeInventoryTopBound + 10 + i * InventoryControl.Instance().activeIngredientSize);
 				ingredientImage.draw(canvas);
 			}
 	}
 	
 	private void drawDraggingIngredient(Canvas canvas) {
 		InventoryControl.Instance().getDraggingIngredient();
-		ingredientImage = Ingredients.Instance().getIngredientImage(GameControl.Instance().activeCharacter.ingredients[InventoryControl.Instance().selCol][InventoryControl.Instance().selRow]);
-		ingredientImage.setBounds(GameControl.Instance().curX - ingredientImage.getMinimumWidth() + InventoryControl.Instance().selCol * 180, 
-				GameControl.Instance().curY - ingredientImage.getMinimumHeight() + InventoryControl.Instance().selRow * 180, 
-				ingredientImage.getMinimumWidth() + GameControl.Instance().curX - ingredientImage.getMinimumWidth() + InventoryControl.Instance().selCol * 180, 
-				ingredientImage.getIntrinsicHeight() + GameControl.Instance().curY - ingredientImage.getMinimumHeight() + InventoryControl.Instance().selRow * 180);
+		ingredientImage = Ingredients.Instance().getIngredientImage(GameControl.Instance().activeCharacter.ingredients[InventoryControl.Instance().selRow][InventoryControl.Instance().selCol]);
+		ingredientImage.setBounds(GameControl.Instance().curX - ingredientImage.getMinimumWidth(), 
+				GameControl.Instance().curY - ingredientImage.getMinimumHeight(), 
+				GameControl.Instance().curX, 
+				GameControl.Instance().curY);
 		ingredientImage.draw(canvas);
 	}
-
+	
+	private void drawCombinatedIngredients(Canvas canvas) {		
+		for (int i = 0; i < CombinationBoardControl.Instance().combinationBoard.length; i++)
+			for (int j = 0; j < CombinationBoardControl.Instance().combinationBoard[i].length; j++) 
+			{
+				if (CombinationBoardControl.Instance().combinationBoard[i][j] == 0)
+					continue;					
+				ingredientImage = Ingredients.Instance().getIngredientImage(CombinationBoardControl.Instance().combinationBoard[i][j]);
+				ingredientImage.setBounds(CombinationBoardControl.Instance().activeCombinationBoardLeftBound + 10 + i * CombinationBoardControl.Instance().activeIngredientSize, 
+						CombinationBoardControl.Instance().activeCombinationBoardTopBound + 10 + j * CombinationBoardControl.Instance().activeIngredientSize, 
+						ingredientImage.getMinimumWidth() + CombinationBoardControl.Instance().activeCombinationBoardLeftBound + 10 + i * CombinationBoardControl.Instance().activeIngredientSize, 
+						ingredientImage.getMinimumHeight() + CombinationBoardControl.Instance().activeCombinationBoardTopBound + 10 + j * CombinationBoardControl.Instance().activeIngredientSize);
+				ingredientImage.draw(canvas);
+			}
+	}
+	
+	private void drawBtCast(Canvas canvas) {
+		getBtCastImage();
+		btCastImage.setBounds(1200, 
+				100, 
+				btCastImage.getMinimumWidth() + 1200, 
+				btCastImage.getMinimumHeight() + 100);
+		btCastImage.draw(canvas);
+	}
+	
+	private void drawBtCancel(Canvas canvas) {
+		getBtCancelImage();
+		btCancelImage.setBounds(1200, 
+				840, 
+				btCancelImage.getMinimumWidth() + 1200, 
+				btCancelImage.getMinimumHeight() + 840);
+		btCancelImage.draw(canvas);
+	}
+	
+	private void drawBtCastClicked(Canvas canvas) {
+		getBtCastClickedImage();
+		btCastClickedImage.setBounds(1200, 
+				100, 
+				btCastClickedImage.getMinimumWidth() + 1200, 
+				btCastClickedImage.getMinimumHeight() + 100);
+		btCastClickedImage.draw(canvas);
+	}
+	
+	private void drawBtCancelClicked(Canvas canvas) {
+		getBtCancelClickedImage();
+		btCancelClickedImage.setBounds(1200, 
+				840, 
+				btCancelClickedImage.getMinimumWidth() + 1200, 
+				btCancelClickedImage.getMinimumHeight() + 840);
+		btCancelClickedImage.draw(canvas);
+	}
+	
 }

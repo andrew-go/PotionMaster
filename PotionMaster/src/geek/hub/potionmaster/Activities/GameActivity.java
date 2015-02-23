@@ -7,6 +7,7 @@ import geek.hub.potionmaster.Controls.GameItemControls.ActionPanelControl;
 import geek.hub.potionmaster.Controls.GameItemControls.BoardControl;
 import geek.hub.potionmaster.Controls.GameItemControls.CombinationBoardControl;
 import geek.hub.potionmaster.Controls.GameItemControls.InventoryControl;
+import geek.hub.potionmaster.Controls.GameItemControls.SpellPanelControl;
 import geek.hub.potionmaster.Views.GameView;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -93,20 +94,30 @@ public class GameActivity extends BaseActivity {
 							GameControl.Instance().gameStatus = eGameStatus.ingredientDragging;
 							return true;
 						}
+						if (event.getAction() == MotionEvent.ACTION_DOWN && SpellPanelControl.isBtCancelClicked(event)) {
+							GameControl.Instance().gameStatus = eGameStatus.cancelSelected;
+							return true;
+						}
+						if (event.getAction() == MotionEvent.ACTION_DOWN && SpellPanelControl.isBtCastClicked(event)) {
+							GameControl.Instance().gameStatus = eGameStatus.castSelected;
+							return true;
+						}
 					case ingredientDragging:
 						if (event.getAction() == MotionEvent.ACTION_UP) {
-							if (CombinationBoardControl.Instance().isOn(event))
-								GameControl.Instance().gameStatus = eGameStatus.spellPanelDisplaying;
+							if (CombinationBoardControl.Instance().isOn(event)) {								
+								GameControl.Instance().gameStatus = eGameStatus.ingredientPutting;
+								CombinationBoardControl.Instance().putIngredient(event);
+								return true;
+							}
 							GameControl.Instance().gameStatus = eGameStatus.spellPanelDisplaying;
 							return true;
 						}
-//						if (event.getAction() == MotionEvent.ACTION_MOVE) {
-//							GameControl.Instance().gameStatus = eGameStatus.inventoryDisplaying;
-//							return true;
-//						}
-						return false;
+//					case ingredientPutting:
+//						CombinationBoardControl.Instance().putIngredient(event);
+//						GameControl.Instance().gameStatus = eGameStatus.spellPanelDisplaying;
+//						return false;
 					default:
-						break;
+						return false;
 				}
 				
 				switch (event.getAction()) {

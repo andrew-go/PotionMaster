@@ -22,15 +22,15 @@ public class InventoryControl {
 	
 	public InventoryControl() {
 		activeIngredientSize = Ingredients.Instance().getIngredientImage(1).getMinimumWidth() + 20;
-		activeInventoryLeftBound = GameControl.Instance().gameView.getSpellPanelImage().getBounds().left + 30;
-		activeInventoryTopBound = GameControl.Instance().gameView.getSpellPanelImage().getBounds().top + 30;
+		activeInventoryLeftBound = GameControl.Instance().gameView.getInventoryImage().getBounds().left + 10;
+		activeInventoryTopBound = GameControl.Instance().gameView.getInventoryImage().getBounds().top + 10;
 		activeInventorySize = activeIngredientSize * 5;
 	}
 	
 	public boolean isIngredientSelected(MotionEvent event) {
 		selCol = getColIndex((int)event.getX());
 		selRow = getRowIndex((int)event.getY());
-		if (GameControl.Instance().activeCharacter.ingredients[selCol][selRow] != 0)
+		if (GameControl.Instance().activeCharacter.ingredients[selRow][selCol] != 0)
 			return true;
 		return false;
 	}
@@ -44,7 +44,7 @@ public class InventoryControl {
 	}
 	
 	public int getDraggingIngredient() {
-		return GameControl.Instance().activeCharacter.ingredients[selCol][selRow];
+		return GameControl.Instance().activeCharacter.ingredients[selRow][selCol];
 	}
 	
 	public static void addIngredient() {

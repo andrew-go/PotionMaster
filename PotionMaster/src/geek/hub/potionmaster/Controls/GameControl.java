@@ -2,6 +2,7 @@ package geek.hub.potionmaster.Controls;
 
 import geek.hub.potionmaster.Controls.GameItemControls.BoardControl;
 import geek.hub.potionmaster.Controls.GameItemControls.CharacterControl;
+import geek.hub.potionmaster.Controls.GameItemControls.CombinationBoardControl;
 import geek.hub.potionmaster.Models.Character;
 import geek.hub.potionmaster.Views.GameView;
 
@@ -33,7 +34,11 @@ public class GameControl {
 		attacking,
 		spellSelected,
 		spellPanelDisplaying,
-		ingredientDragging
+		ingredientDragging,
+		ingredientPutting,
+		castSelected,
+		casting,
+		cancelSelected
 	};
 	
 	/**Members**/
@@ -63,6 +68,8 @@ public class GameControl {
 	public int selCol = -1;
 	public int selRow = -1;
 	
+	
+	/**TODO don't know if this is okay**/
 	public int curX = -1;
 	public int curY = -1;
 	
@@ -174,6 +181,22 @@ public class GameControl {
 					case spellPanelDisplaying:
 						spellPanelDisplaying();
 						break;
+					case ingredientDragging:
+						break;
+					case ingredientPutting:
+						ingredientPutting();
+						break;
+					case cancelSelected:
+						cancelSelected();
+						break;
+					case castSelected:
+						castSelected();
+						break;
+					case casting:
+						casting();
+						break;
+					default:
+						break;
 	    		}
 	    	}
 	    	/**TODO maybe it will decrease memory usage**/
@@ -236,12 +259,42 @@ public class GameControl {
 				sleep(500);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
+			}			
 	    	GameControl.Instance().gameStatus = eGameStatus.spellPanelDisplaying;
 	    }
 	    
-	    private void spellPanelDisplaying() {
+	    private void spellPanelDisplaying() {	    	
 	    	/**spellPanelDisplaying**/
+	    }
+	    
+	    private void ingredientPutting() {
+	    	/**ingredientPutting**/
+			GameControl.Instance().gameStatus = eGameStatus.spellPanelDisplaying;
+	    }
+	    
+	    private void cancelSelected() {
+	    	/**cancelSelected**/
+			try {
+				sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			GameControl.Instance().gameStatus = eGameStatus.actionOffer;
+	    }
+	    
+	    private void castSelected(){
+	    	/**castSelected**/
+			try {
+				sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			GameControl.Instance().gameStatus = eGameStatus.casting;
+	    }
+	    
+	    private void casting() {
+	    	/**casting**/
+	    	GameControl.Instance().gameStatus = eGameStatus.noAction;
 	    }
 	    
 	}
