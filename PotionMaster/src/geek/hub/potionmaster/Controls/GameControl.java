@@ -32,7 +32,7 @@ public class GameControl {
 		attackSelected,
 		attacking,
 		spellSelected,
-		inventoryDisplaying,
+		spellPanelDisplaying,
 		ingredientDragging
 	};
 	
@@ -124,10 +124,7 @@ public class GameControl {
 	    public void run() {
 	    	while(run) {
 				try {
-					if (GameControl.Instance().gameStatus == eGameStatus.ingredientDragging)
-						sleep(500);
-					else
-						sleep(100);
+					sleep(100);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -174,14 +171,14 @@ public class GameControl {
 					case spellSelected:
 						spellSelected();
 						break;
-					case inventoryDisplaying:
-						inventoryDisplaying();
+					case spellPanelDisplaying:
+						spellPanelDisplaying();
 						break;
 	    		}
 	    	}
 	    	/**TODO maybe it will decrease memory usage**/
 			try {
-				sleep(50);
+				sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -240,11 +237,11 @@ public class GameControl {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-	    	GameControl.Instance().gameStatus = eGameStatus.inventoryDisplaying;
+	    	GameControl.Instance().gameStatus = eGameStatus.spellPanelDisplaying;
 	    }
 	    
-	    private void inventoryDisplaying() {
-	    	/**inventoryDisplaying**/
+	    private void spellPanelDisplaying() {
+	    	/**spellPanelDisplaying**/
 	    }
 	    
 	}

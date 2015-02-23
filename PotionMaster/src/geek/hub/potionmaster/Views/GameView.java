@@ -43,7 +43,7 @@ public class GameView extends View {
 	private Drawable btSpellImage;
 	private Drawable btSpellClickedImage;
 	
-	private Drawable inventoryImage;
+	private Drawable spellPanelImage;
 	
 	private Drawable ingredientImage;
 	
@@ -119,10 +119,11 @@ public class GameView extends View {
 				: btSpellClickedImage;
 	}
 	
-	public Drawable getInventoryImage() {
-		return inventoryImage == null 
-				? inventoryImage = context.getResources().getDrawable(R.drawable.inventory) 
-				: inventoryImage;
+	/**TODO maybe I should draw this as different objects inventory and combinationBoard**/
+	public Drawable getSpellPanelImage() {
+		return spellPanelImage == null 
+				? spellPanelImage = context.getResources().getDrawable(R.drawable.spell_panel) 
+				: spellPanelImage;
 	}	
 	
 	public Point pouchesStartPoint; 
@@ -176,12 +177,12 @@ public class GameView extends View {
 				drawBtAttack(canvas);
 				drawBtSpellClicked(canvas);
 				break;
-			case inventoryDisplaying:
-				drawInventory(canvas);
+			case spellPanelDisplaying:
+				drawSpellPanel(canvas);
 				drawIngredients(canvas);
 				break;
 			case ingredientDragging:
-				drawInventory(canvas);
+				drawSpellPanel(canvas);
 				drawIngredients(canvas);
 				drawDraggingIngredient(canvas);
 				break;	
@@ -356,13 +357,13 @@ public class GameView extends View {
 		btSpellClickedImage.draw(canvas);
 	}
 	
-	private void drawInventory(Canvas canvas) {
-		getInventoryImage();
-		inventoryImage.setBounds(180, 
+	private void drawSpellPanel(Canvas canvas) {
+		getSpellPanelImage();
+		spellPanelImage.setBounds(180, 
 				60, 
-				inventoryImage.getMinimumWidth() + 180, 
-				inventoryImage.getMinimumHeight() + 60);
-		inventoryImage.draw(canvas);
+				spellPanelImage.getMinimumWidth() + 180, 
+				spellPanelImage.getMinimumHeight() + 60);
+		spellPanelImage.draw(canvas);
 	}
 	
 	/**TODO stop redrawing till touch**/

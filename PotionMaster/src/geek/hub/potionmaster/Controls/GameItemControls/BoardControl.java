@@ -1,5 +1,6 @@
 package geek.hub.potionmaster.Controls.GameItemControls;
 
+import geek.hub.potionmaster.Ingredients;
 import geek.hub.potionmaster.Controls.GameControl;
 import geek.hub.potionmaster.Controls.GameControl.eGameStatus;
 import geek.hub.potionmaster.Settings.GameSettings;
@@ -13,15 +14,25 @@ public class BoardControl {
 	public static BoardControl Instance() {
 		return instance == null ? instance = new BoardControl() : instance;
 	}
+	
+	public int activePouchSize;
+	public int activeBoardLeftBound;
+	public int activeBoardTopBound;
+	public int activeBoardSize;
+	
+	public BoardControl() {
+		activePouchSize = GameControl.Instance().gameView.getPouchNormalImage().getMinimumWidth() - 8 + 20;
+		activeBoardLeftBound = GameControl.Instance().gameView.pouchesStartPoint.x - 10;
+		activeBoardTopBound = GameControl.Instance().gameView.pouchesStartPoint.y - 10;
+		activeBoardSize = activePouchSize * 5;
+	}
 
-	private static int getColIndex(int x) {
-		return ((int) x - GameControl.Instance().gameView.pouchesStartPoint.x - 10/*pouch margin*/) 
-				/ (GameControl.Instance().gameView.getPouchNormalImage().getMinimumWidth() + 20/*x2 pouch margin*/);
+	private int getColIndex(int x) {
+		return (x - activeBoardLeftBound) / activePouchSize;
 	}
 	
-	private static int getRowIndex(int y) {
-		return ((int) y - GameControl.Instance().gameView.pouchesStartPoint.y - 10/*pouch margin*/) 
-				/ (GameControl.Instance().gameView.getPouchNormalImage().getMinimumHeight() + 20/*x2 pouch margin*/);
+	private int getRowIndex(int y) {
+		return (y - activeBoardTopBound) / activePouchSize;
 	}
 	
 	public static void removeSelectedPouch() {
@@ -33,18 +44,18 @@ public class BoardControl {
 		GameControl.Instance().removedPouchesCount++;
 	}
 	
-	public static boolean isPouchExist(int x, int y) {
+	public boolean isPouchExist(int x, int y) {
 		GameControl.Instance().currentCol = getColIndex(x);
 		GameControl.Instance().currentRow = getRowIndex(y);
 		return GameControl.Instance().pouches[GameControl.Instance().currentCol][GameControl.Instance().currentRow] != -1;
 	}
 	
 	/**TODO check this. Maybe it would be better to use bounds - GameControl.Instance().gameView.getBoardImage().getBounds()**/
-	public static boolean isTouchOn(MotionEvent event) {  
-		if ((event.getX() < GameControl.Instance().gameView.pouchesStartPoint.x - 10/*pouch merge*/)
-				|| (event.getX() > GameControl.Instance().gameView.pouchesStartPoint.x + GameControl.Instance().gameView.getBoardImage().getMinimumWidth() + 10/*pouch margin*/ - 160 * 2/*board margin*/)
-				|| (event.getY() < GameControl.Instance().gameView.pouchesStartPoint.y - 10/*pouch merge*/)
-				|| (event.getY() > GameControl.Instance().gameView.pouchesStartPoint.y + (GameControl.Instance().gameView.getBoardImage().getMinimumHeight() + 10/*pouch margin*/ - 160 * 2/*board margin*/)))
+	public boolean isOn(MotionEvent event) {  
+		if ((event.getX() < activeBoardLeftBound)
+				|| (event.getX() > activeBoardSize + activeBoardLeftBound)
+				|| (event.getY() < activeBoardTopBound)
+				|| (event.getY() > activeBoardSize + activeBoardTopBound))
 			return false;
 		if (GameControl.Instance().gameStatus != eGameStatus.pouchSelecting)
 			GameControl.Instance().gameStatus = eGameStatus.pouchSelecting;

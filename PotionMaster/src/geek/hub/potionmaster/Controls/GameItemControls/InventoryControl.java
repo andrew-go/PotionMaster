@@ -15,6 +15,18 @@ public class InventoryControl {
 	public int selCol = -1;
 	public int selRow = -1;
 	
+	public int activeIngredientSize;
+	public int activeInventoryLeftBound;
+	public int activeInventoryTopBound;
+	public int activeInventorySize;
+	
+	public InventoryControl() {
+		activeIngredientSize = Ingredients.Instance().getIngredientImage(1).getMinimumWidth() + 20;
+		activeInventoryLeftBound = GameControl.Instance().gameView.getSpellPanelImage().getBounds().left + 30;
+		activeInventoryTopBound = GameControl.Instance().gameView.getSpellPanelImage().getBounds().top + 30;
+		activeInventorySize = activeIngredientSize * 5;
+	}
+	
 	public boolean isIngredientSelected(MotionEvent event) {
 		selCol = getColIndex((int)event.getX());
 		selRow = getRowIndex((int)event.getY());
@@ -23,14 +35,12 @@ public class InventoryControl {
 		return false;
 	}
 	
-	private static int getColIndex(int x) {
-		return (x - GameControl.Instance().gameView.getInventoryImage().getBounds().left/*margin*/) 
-				/ (Ingredients.Instance().getIngredientImage(1).getMinimumWidth() + 40/*margin*/);
+	private int getColIndex(int x) {
+		return (x - activeInventoryLeftBound) / activeIngredientSize;
 	}
 	
-	private static int getRowIndex(int y) {
-		return (y - GameControl.Instance().gameView.getInventoryImage().getBounds().top /*margin*/) 
-				/ (Ingredients.Instance().getIngredientImage(1).getMinimumHeight() + 40/*x2 pouch margin*/);
+	private int getRowIndex(int y) {
+		return (y - activeInventoryTopBound) / activeIngredientSize;
 	}
 	
 	public int getDraggingIngredient() {
@@ -52,6 +62,15 @@ public class InventoryControl {
 					return;
 				}
 			}
+	}
+	
+	public boolean isOn(MotionEvent event) {  
+		if ((event.getX() < activeInventoryLeftBound)
+				|| (event.getX() > activeInventoryLeftBound + activeInventorySize)
+				|| (event.getY() < activeInventoryTopBound)
+				|| (event.getY() > activeInventoryTopBound + activeInventorySize))
+			return false;
+		return true;
 	}
 	
 }
