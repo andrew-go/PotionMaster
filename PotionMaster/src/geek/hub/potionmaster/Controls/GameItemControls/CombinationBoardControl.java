@@ -30,6 +30,12 @@ public class CombinationBoardControl {
 
 	}
 	
+	public void clearCombinationBoard() {
+		for (int i = 0; i < combinationBoard.length; i++)
+			for (int j = 0; j < combinationBoard[i].length; j++)
+				combinationBoard[i][j] = 0;
+	}
+	
 	public void putIngredient(MotionEvent event) {
 		selCol = getColIndex((int)event.getX());
 		selRow = getRowIndex((int)event.getY());

@@ -280,6 +280,7 @@ public class GameControl {
 				e.printStackTrace();
 			}
 			GameControl.Instance().gameStatus = eGameStatus.actionOffer;
+			CombinationBoardControl.Instance().clearCombinationBoard();
 	    }
 	    
 	    private void castSelected(){
@@ -290,6 +291,7 @@ public class GameControl {
 				e.printStackTrace();
 			}
 			GameControl.Instance().gameStatus = eGameStatus.casting;
+			CombinationBoardControl.Instance().clearCombinationBoard();
 	    }
 	    
 	    private void casting() {
