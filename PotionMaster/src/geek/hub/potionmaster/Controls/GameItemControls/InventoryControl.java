@@ -1,6 +1,6 @@
 package geek.hub.potionmaster.Controls.GameItemControls;
 
-import geek.hub.potionmaster.Ingredients;
+import geek.hub.potionmaster.IngredientManager;
 import geek.hub.potionmaster.Controls.GameControl;
 import android.view.MotionEvent;
 
@@ -21,7 +21,7 @@ public class InventoryControl {
 	public int activeInventorySize;
 	
 	public InventoryControl() {
-		activeIngredientSize = Ingredients.Instance().getIngredientImage(1).getMinimumWidth() + 20;
+		activeIngredientSize = IngredientManager.Instance().getIngredientImage(1).getMinimumWidth() + 20;
 		activeInventoryLeftBound = GameControl.Instance().gameView.getInventoryImage().getBounds().left + 10;
 		activeInventoryTopBound = GameControl.Instance().gameView.getInventoryImage().getBounds().top + 10;
 		activeInventorySize = activeIngredientSize * 5;
@@ -66,9 +66,9 @@ public class InventoryControl {
 	
 	public boolean isOn(MotionEvent event) {  
 		if ((event.getX() < activeInventoryLeftBound)
-				|| (event.getX() > activeInventoryLeftBound + activeInventorySize)
+				|| (event.getX() >= activeInventoryLeftBound + activeInventorySize)
 				|| (event.getY() < activeInventoryTopBound)
-				|| (event.getY() > activeInventoryTopBound + activeInventorySize))
+				|| (event.getY() >= activeInventoryTopBound + activeInventorySize))
 			return false;
 		return true;
 	}

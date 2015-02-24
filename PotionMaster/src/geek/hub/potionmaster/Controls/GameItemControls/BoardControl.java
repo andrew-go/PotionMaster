@@ -1,11 +1,9 @@
 package geek.hub.potionmaster.Controls.GameItemControls;
 
-import geek.hub.potionmaster.Ingredients;
 import geek.hub.potionmaster.Controls.GameControl;
 import geek.hub.potionmaster.Controls.GameControl.eGameStatus;
 import geek.hub.potionmaster.Settings.GameSettings;
 import android.view.MotionEvent;
-
 
 public class BoardControl {
 	
@@ -45,17 +43,22 @@ public class BoardControl {
 	}
 	
 	public boolean isPouchExist(int x, int y) {
-		GameControl.Instance().currentCol = getColIndex(x);
-		GameControl.Instance().currentRow = getRowIndex(y);
-		return GameControl.Instance().pouches[GameControl.Instance().currentCol][GameControl.Instance().currentRow] != -1;
+		try {
+			GameControl.Instance().currentCol = getColIndex(x);
+			GameControl.Instance().currentRow = getRowIndex(y);
+			return GameControl.Instance().pouches[GameControl.Instance().currentCol][GameControl.Instance().currentRow] != -1;
+		} catch(Exception ex) {
+			int a = 0;
+			return false;
+		}
 	}
 	
 	/**TODO check this. Maybe it would be better to use bounds - GameControl.Instance().gameView.getBoardImage().getBounds()**/
 	public boolean isOn(MotionEvent event) {  
 		if ((event.getX() < activeBoardLeftBound)
-				|| (event.getX() > activeBoardSize + activeBoardLeftBound)
+				|| (event.getX() >= activeBoardSize + activeBoardLeftBound)
 				|| (event.getY() < activeBoardTopBound)
-				|| (event.getY() > activeBoardSize + activeBoardTopBound))
+				|| (event.getY() >= activeBoardSize + activeBoardTopBound))
 			return false;
 		if (GameControl.Instance().gameStatus != eGameStatus.pouchSelecting)
 			GameControl.Instance().gameStatus = eGameStatus.pouchSelecting;

@@ -62,6 +62,7 @@ public class GameActivity extends BaseActivity {
 				GameControl.Instance().curY = (int) event.getY();
 				switch (GameControl.Instance().gameStatus) {
 					case noAction:
+						
 					case pouchSelecting:
 						if (!BoardControl.Instance().isOn(event))
 							return false;

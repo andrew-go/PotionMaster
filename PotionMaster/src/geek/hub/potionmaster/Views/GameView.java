@@ -1,15 +1,18 @@
 package geek.hub.potionmaster.Views;
 
-import geek.hub.potionmaster.Ingredients;
+import geek.hub.potionmaster.CombinationManager;
+import geek.hub.potionmaster.IngredientManager;
 import geek.hub.potionmaster.R;
 import geek.hub.potionmaster.Controls.GameControl;
 import geek.hub.potionmaster.Controls.GameControl.eGameStatus;
 import geek.hub.potionmaster.Controls.GameItemControls.CombinationBoardControl;
 import geek.hub.potionmaster.Controls.GameItemControls.InventoryControl;
+import geek.hub.potionmaster.Controls.GameItemControls.SpellPanelControl;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -104,15 +107,25 @@ public class GameView extends View {
 	}
 	
 	public Drawable getBtAttackImage() {
-		return btAttackImage == null 
-					? btAttackImage = context.getResources().getDrawable(R.drawable.bt_attack) 
-					: btAttackImage;
+		if (btAttackImage == null) {
+			btAttackImage = context.getResources().getDrawable(R.drawable.bt_attack);
+			btAttackImage.setBounds(580, 
+					460, 
+					btAttackImage.getMinimumWidth() + 580, 
+					btAttackImage.getMinimumHeight() + 460);
+		}
+		return btAttackImage;
 	}
 	
 	public Drawable getBtAttackClickedImage() {
-			return btAttackClickedImage == null 
-					? btAttackClickedImage = context.getResources().getDrawable(R.drawable.bt_attack_clicked) 
-					: btAttackClickedImage;
+		if (btAttackClickedImage == null) {
+			btAttackClickedImage = context.getResources().getDrawable(R.drawable.bt_attack_clicked);
+			btAttackClickedImage.setBounds(580, 
+					460, 
+					btAttackClickedImage.getMinimumWidth() + 580, 
+					btAttackClickedImage.getMinimumHeight() + 460);
+		}
+		return btAttackClickedImage;
 	}
 	
 	public Drawable getBtSpellImage() {
@@ -214,6 +227,7 @@ public class GameView extends View {
 				drawBtSpell(canvas);
 				break;
 			case attacking:
+				drawAttackAnimation(canvas);
 				break;
 			case spellSelected:				
 				drawActivePanel(canvas);
@@ -237,6 +251,7 @@ public class GameView extends View {
 				drawSpellPanelItems(canvas);
 				break;
 			case casting:
+				drawSpellAnimation(canvas);
 				break;
 			default:
 				break;
@@ -311,7 +326,7 @@ public class GameView extends View {
 	
 	private void drawEnemy(Canvas canvas) {
 		getEnemyImage();
-		enemyImage.setBounds(1520, 440, enemyImage.getMinimumWidth() + 1520,  enemyImage.getMinimumHeight() + 440);
+		enemyImage.setBounds(1520, 720, enemyImage.getMinimumWidth() + 1520,  enemyImage.getMinimumHeight() + 720);
 		enemyImage.draw(canvas);
 	}
 	
@@ -361,10 +376,9 @@ public class GameView extends View {
 	}
 	
 	private void drawSelectedIngredient(Canvas canvas) {
-		paint.setTextSize(50);
-		paint.setColor(Color.RED);
-		canvas.drawText(String.format("%d", GameControl.Instance().lastSelectedIngredient), 
-				pouchesStartPoint.x + 400, pouchesStartPoint.y + 400, paint);
+		ingredientImage = IngredientManager.Instance().getIngredientImage(GameControl.Instance().lastSelectedIngredient);
+		ingredientImage.setBounds(800, 500, ingredientImage.getMinimumWidth() + 800, ingredientImage.getMinimumHeight() + 500);
+		ingredientImage.draw(canvas);
 	}
 	
 	private void drawActivePanel(Canvas canvas) {
@@ -378,18 +392,11 @@ public class GameView extends View {
 	
 	private void drawBtAttack(Canvas canvas) {
 		getBtAttackImage();
-		btAttackImage.setBounds(580, 
-				460, 
-				btAttackImage.getMinimumWidth() + 580, 
-				btAttackImage.getMinimumHeight() + 460);
 		btAttackImage.draw(canvas);
 	}
+	
 	private void drawBtAttackClicked(Canvas canvas) {
 		getBtAttackClickedImage();
-		btAttackClickedImage.setBounds(580, 
-				460, 
-				btAttackClickedImage.getMinimumWidth() + 580, 
-				btAttackClickedImage.getMinimumHeight() + 460);
 		btAttackClickedImage.draw(canvas);
 	}
 	
@@ -419,7 +426,7 @@ public class GameView extends View {
 		drawCombinatedIngredients(canvas);
 		if (GameControl.Instance().gameStatus == eGameStatus.castSelected)
 			drawBtCastClicked(canvas);
-		else
+		else if (CombinationBoardControl.Instance().isContainingCombination())
 			drawBtCast(canvas);
 		if (GameControl.Instance().gameStatus == eGameStatus.cancelSelected)
 			drawBtCancelClicked(canvas);
@@ -462,7 +469,7 @@ public class GameView extends View {
 			{
 				if (GameControl.Instance().activeCharacter.ingredients[i][j] == 0)
 					return;					
-				ingredientImage = Ingredients.Instance().getIngredientImage(GameControl.Instance().activeCharacter.ingredients[i][j]);
+				ingredientImage = IngredientManager.Instance().getIngredientImage(GameControl.Instance().activeCharacter.ingredients[i][j]);
 				ingredientImage.setBounds(InventoryControl.Instance().activeInventoryLeftBound + 10 + j * InventoryControl.Instance().activeIngredientSize, 
 						InventoryControl.Instance().activeInventoryTopBound + 10 + i * InventoryControl.Instance().activeIngredientSize, 
 						ingredientImage.getMinimumWidth() + InventoryControl.Instance().activeInventoryLeftBound + 10 + j * InventoryControl.Instance().activeIngredientSize, 
@@ -473,7 +480,7 @@ public class GameView extends View {
 	
 	private void drawDraggingIngredient(Canvas canvas) {
 		InventoryControl.Instance().getDraggingIngredient();
-		ingredientImage = Ingredients.Instance().getIngredientImage(GameControl.Instance().activeCharacter.ingredients[InventoryControl.Instance().selRow][InventoryControl.Instance().selCol]);
+		ingredientImage = IngredientManager.Instance().getIngredientImage(GameControl.Instance().activeCharacter.ingredients[InventoryControl.Instance().selRow][InventoryControl.Instance().selCol]);
 		ingredientImage.setBounds(GameControl.Instance().curX - ingredientImage.getMinimumWidth(), 
 				GameControl.Instance().curY - ingredientImage.getMinimumHeight(), 
 				GameControl.Instance().curX, 
@@ -487,7 +494,7 @@ public class GameView extends View {
 			{
 				if (CombinationBoardControl.Instance().combinationBoard[i][j] == 0)
 					continue;					
-				ingredientImage = Ingredients.Instance().getIngredientImage(CombinationBoardControl.Instance().combinationBoard[i][j]);
+				ingredientImage = IngredientManager.Instance().getIngredientImage(CombinationBoardControl.Instance().combinationBoard[i][j]);
 				ingredientImage.setBounds(CombinationBoardControl.Instance().activeCombinationBoardLeftBound + 10 + i * CombinationBoardControl.Instance().activeIngredientSize, 
 						CombinationBoardControl.Instance().activeCombinationBoardTopBound + 10 + j * CombinationBoardControl.Instance().activeIngredientSize, 
 						ingredientImage.getMinimumWidth() + CombinationBoardControl.Instance().activeCombinationBoardLeftBound + 10 + i * CombinationBoardControl.Instance().activeIngredientSize, 
@@ -510,12 +517,12 @@ public class GameView extends View {
 		btCancelImage.setBounds(1200, 
 				840, 
 				btCancelImage.getMinimumWidth() + 1200, 
-				btCancelImage.getMinimumHeight() + 840);
+				btCancelImage.getMinimumHeight() + 840);      
 		btCancelImage.draw(canvas);
 	}
 	
 	private void drawBtCastClicked(Canvas canvas) {
-		getBtCastClickedImage();
+		getBtCastClickedImage();		
 		btCastClickedImage.setBounds(1200, 
 				100, 
 				btCastClickedImage.getMinimumWidth() + 1200, 
@@ -530,6 +537,26 @@ public class GameView extends View {
 				btCancelClickedImage.getMinimumWidth() + 1200, 
 				btCancelClickedImage.getMinimumHeight() + 840);
 		btCancelClickedImage.draw(canvas);
+	}
+	
+	private void drawAttackAnimation(Canvas canvas) {
+		paint.setColor(Color.CYAN);
+		paint.setTextSize(400);
+		paint.setTextAlign(Align.CENTER);
+		int xPos = (canvas.getWidth() / 2);
+		int yPos = (int) ((canvas.getHeight() / 2) - ((paint.descent() + paint.ascent()) / 2)) ; 
+		canvas.drawText("ATTACK", xPos, yPos, paint);
+		paint.setTextAlign(Align.LEFT);
+	}
+	
+	private void drawSpellAnimation(Canvas canvas) {
+		paint.setColor(Color.MAGENTA);
+		paint.setTextSize(400);
+		paint.setTextAlign(Align.CENTER);
+		int xPos = (canvas.getWidth() / 2);
+		int yPos = (int) ((canvas.getHeight() / 2) - ((paint.descent() + paint.ascent()) / 2)) ; 
+		canvas.drawText(SpellPanelControl.Instance().activeSpell.name, xPos, yPos, paint);
+		paint.setTextAlign(Align.LEFT);
 	}
 	
 }

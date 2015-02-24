@@ -8,7 +8,7 @@ public class GameSettings {
 		return instance == null ? instance = new GameSettings() : instance;
 	}
 	
-	public boolean isMusicOn = false;
+	public boolean isMusicOn = true;
 	public boolean isSoundsOn = true;
 	
 	public int pouchCount = 25;

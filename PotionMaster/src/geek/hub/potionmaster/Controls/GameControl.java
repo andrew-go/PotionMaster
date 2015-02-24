@@ -1,9 +1,12 @@
 package geek.hub.potionmaster.Controls;
 
+import geek.hub.potionmaster.CombinationManager;
 import geek.hub.potionmaster.Controls.GameItemControls.BoardControl;
 import geek.hub.potionmaster.Controls.GameItemControls.CharacterControl;
 import geek.hub.potionmaster.Controls.GameItemControls.CombinationBoardControl;
+import geek.hub.potionmaster.Controls.GameItemControls.SpellPanelControl;
 import geek.hub.potionmaster.Models.Character;
+import geek.hub.potionmaster.Models.Combination.Spell;
 import geek.hub.potionmaster.Views.GameView;
 
 import java.util.Random;
@@ -250,6 +253,11 @@ public class GameControl {
 			CharacterControl.endTurn();
 			if (BoardControl.isEmpty())
 				BoardControl.fillUp();
+			try {
+				sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 	    	GameControl.Instance().gameStatus = eGameStatus.noAction;
 	    }
 	    
@@ -269,6 +277,10 @@ public class GameControl {
 	    
 	    private void ingredientPutting() {
 	    	/**ingredientPutting**/
+	    	
+	    	/**TODO move this to CombinationBoardControl**/
+	    	CombinationBoardControl.Instance().isContainingCombination = CombinationManager.Instance().getSpell(CombinationBoardControl.Instance().combinationBoard) != null;
+	    	
 			GameControl.Instance().gameStatus = eGameStatus.spellPanelDisplaying;
 	    }
 	    
@@ -291,11 +303,20 @@ public class GameControl {
 				e.printStackTrace();
 			}
 			GameControl.Instance().gameStatus = eGameStatus.casting;
-			CombinationBoardControl.Instance().clearCombinationBoard();
+
 	    }
 	    
 	    private void casting() {
 	    	/**casting**/
+	    	SpellPanelControl.Instance().activeSpell = CombinationManager.Instance().getSpell(CombinationBoardControl.Instance().combinationBoard);
+			CharacterControl.useSpell(SpellPanelControl.Instance().activeSpell);
+			CharacterControl.endTurn();
+			CombinationBoardControl.Instance().clearCombinationBoard();
+			try {
+				sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 	    	GameControl.Instance().gameStatus = eGameStatus.noAction;
 	    }
 	    

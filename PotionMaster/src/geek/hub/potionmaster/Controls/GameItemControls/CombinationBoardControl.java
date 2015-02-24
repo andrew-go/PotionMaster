@@ -1,6 +1,6 @@
 package geek.hub.potionmaster.Controls.GameItemControls;
 
-import geek.hub.potionmaster.Ingredients;
+import geek.hub.potionmaster.IngredientManager;
 import geek.hub.potionmaster.Controls.GameControl;
 import android.view.MotionEvent;
 
@@ -20,10 +20,12 @@ public class CombinationBoardControl {
 	public int selCol = -1;
 	public int selRow = -1;
 	
+	public boolean isContainingCombination = false;
+	
 	public int[][] combinationBoard = new int[3][3];
 	
 	public CombinationBoardControl() {
-		activeIngredientSize = Ingredients.Instance().getIngredientImage(1).getMinimumWidth() + 20;
+		activeIngredientSize = IngredientManager.Instance().getIngredientImage(1).getMinimumWidth() + 20;
 		activeCombinationBoardSize = activeIngredientSize * 3;
 		activeCombinationBoardLeftBound = GameControl.Instance().gameView.getCombinationBoardImage().getBounds().left + 10;
 		activeCombinationBoardTopBound = GameControl.Instance().gameView.getCombinationBoardImage().getBounds().top + 10;
@@ -34,6 +36,7 @@ public class CombinationBoardControl {
 		for (int i = 0; i < combinationBoard.length; i++)
 			for (int j = 0; j < combinationBoard[i].length; j++)
 				combinationBoard[i][j] = 0;
+		isContainingCombination = false;
 	}
 	
 	public void putIngredient(MotionEvent event) {
@@ -50,13 +53,17 @@ public class CombinationBoardControl {
 		return (y - activeCombinationBoardTopBound) / activeIngredientSize;
 	}
 
-	public boolean isOn(MotionEvent event) {  
+	public boolean isOn(MotionEvent event) {
 		if ((event.getX() < activeCombinationBoardLeftBound)
-				|| (event.getX() > activeCombinationBoardSize + activeCombinationBoardLeftBound)
+				|| (event.getX() >= activeCombinationBoardSize + activeCombinationBoardLeftBound)
 				|| (event.getY() < activeCombinationBoardTopBound)
-				|| (event.getY() > activeCombinationBoardSize + activeCombinationBoardTopBound))
+				|| (event.getY() >= activeCombinationBoardSize + activeCombinationBoardTopBound))
 			return false;
 		return true;
+	}
+	
+	public boolean isContainingCombination() {
+		return isContainingCombination;
 	}
 
 }
